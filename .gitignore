@@ -1,0 +1,7 @@
+Data_access/
+API_next_datafiles/
+projectdb.sql
+*.txt
+test.sql
+*.pyc
+
