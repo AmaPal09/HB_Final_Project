@@ -1,7 +1,9 @@
 Data_access/
 API_next_datafiles/
+API_nextbus_datafiles/
 projectdb.sql
-*.txt
 test.sql
 *.pyc
+seed_data
+env/
 
