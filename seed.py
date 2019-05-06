@@ -49,37 +49,31 @@ def load_agency():
 
     print("Agencies")
 
-    # Delete all rows in table to avoid duplicate data over multiple runs.  
-    # Route file refers to region_id as a foreign key, so delete data from that as well. 
-    Route.query.delete()
-    Agency.query.delete()
-    
     # Read agencies from the API JSON file
     agencies_json = open("seed_data/agencies.json").read()
     agencies_info = json.loads(agencies_json)
 
     # Extract and load details for each of the agencies
     for i in range(len(agencies_info['agency'])): 
-        # extract agency attributes
-        tag = agencies_info['agency'][i]['tag']
-        title = agencies_info['agency'][i]['title']
-        region_title = agencies_info['agency'][i]['regionTitle']
-        short_title = agencies_info['agency'][i].get('shortTitle',None)
-        
         # get region id for provided region
-        region = Region.query.filter(Region.region == region_title ).first()
-        # print(region.region_id, region.region)
+        region_id = Region.query.with_entities(Region.region_id).filter(Region.region == agencies_info['agency'][i]['regionTitle'] ).first()
         
-        # create agency instance
-        agency = Agency(agency_tag=tag, 
-            agency_short_title=short_title,
-            agency_title=title,
-            region_id=region.region_id)
+        # check if record present for the agency in agencies table. 
+        dup_agency = Agency.query.filter(and_(Agency.agency_tag == agencies_info['agency'][i]['tag'], Agency.agency_title == agencies_info['agency'][i]['title'])).first()
         
-        # Add the instance to the session or it wont be stored in the DB
-        db.session.add(agency)
 
-    # Commit all the newly added users to the DB 
+        if dup_agency: 
+            # if agency is present in table, go to next agency
+            continue
+        else: 
+            # Add the agency to the table as it is not alreaty present
+            new_agency = Agency(agency_tag=agencies_info['agency'][i]['tag'], 
+                agency_short_title=agencies_info['agency'][i].get('shortTitle',None),
+                agency_title=agencies_info['agency'][i]['title'],
+                region_id=region_id) 
+            db.session.add(new_agency)
+
+    # Commit all the newly added agencies to the DB
     db.session.commit()
 
     print("Agencies loaded")
@@ -90,8 +84,8 @@ def load_route():
 
     print("Routes")
 
-    Route.query.delete()
-    Bus_Route.query.delete()
+    # Route.query.delete()
+    # Bus_Route.query.delete()
 
 
     route_json = open("seed_data/sfmuni_routes.json").read()
@@ -247,14 +241,6 @@ def load_bus_route():
             print("Loaded bus route stops for a direction")
 
         break
-
-
-       
-
-
-
-
-
 
 
 if __name__ == "__main__": 
