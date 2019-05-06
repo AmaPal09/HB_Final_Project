@@ -20,29 +20,25 @@ def load_region():
 
     print("Regions")
 
-    # Delete all rows in table to avoid duplicate data over multiple runs.  
-    # Agency file refers to region_id as a foreign key, so delete data from that as well. 
-    Agency.query.delete()
-    Region.query.delete()
+    # Agency.query.delete()
+    # Region.query.delete()
     
     agencies_json = open("seed_data/agencies.json").read()
     agencies_info = json.loads(agencies_json)
 
     for i in range(len(agencies_info['agency'])): 
-        region_title = agencies_info['agency'][i]['regionTitle']
-
-        # dup_region will have none when record is not found
-        dup_region = Region.query.filter(Region.region == region_title ).first()
-        # print(region_title, dup_region)
+        # look for region record in regions table
+        dup_region = Region.query.filter(Region.region == agencies_info['agency'][i]['regionTitle']).first()
         
         if dup_region: 
+            # if region is present in table, go to next region
             continue
         else: 
-            region = Region(region=region_title)
-            # Add the instance to the session or it wont be stored in the db
+            # Add the region to the table as it is not alreaty present
+            region = Region(region=agencies_info['agency'][i]['regionTitle'])
             db.session.add(region)
 
-    # Commit all the newly added users to the DB 
+    # Commit all the newly added users to the regions table 
     db.session.commit()
 
     print("Regions loaded")
