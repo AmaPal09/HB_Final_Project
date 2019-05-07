@@ -132,7 +132,7 @@ class Bus_Route(db.Model):
         primary_key = True, 
         autoincrement = True)
     title = db.Column(
-        db.String(50),
+        db.String(60),
         nullable = False)
     tag = db.Column(
         db.String(20),
