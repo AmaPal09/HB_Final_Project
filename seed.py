@@ -118,7 +118,6 @@ def load_bus_route():
     routes = Route.query.all()
 
     # get stops and bus route details for all routes
-    print("Total routes presnet {}".format(len(routes)))
     for route in routes: 
         print("Start looping through the routes")
 
@@ -140,6 +139,7 @@ def load_bus_route():
 
         ####### end of accessing  API #######
         
+
         ####### start of getting data from the API #######
 
         ####### start of getting stop details #######
@@ -147,10 +147,9 @@ def load_bus_route():
         stops_on_route = route_json['route']['stop']
         # print("got list of all stops on the route")
 
-        print("title of this route is: {}".format(route_json['route']['direction'][0]['title']))
-        print("start looping through the list of bus stops:- {}".format(len(stops_on_route)))
         # loop through all the stops in the route
         for stop in stops_on_route: 
+            print("Load stops")
             # check if stop is already present in the table. 
             stop_id = Stop.query.with_entities(Stop.stop_id).filter(and_(Stop.stop_tag == int(stop['tag']), Stop.stop_id_tag ==int(stop['stopId']), Stop.stop_title == stop['title'] )).first()
 
@@ -181,17 +180,15 @@ def load_bus_route():
         print("get route direction details")
 
         for route_direction in route_directions_list: 
-            pprint(route_direction)
 
             dir_name = route_direction['name']
-            print("This is a {} route".format(dir_name))
 
             ####### start of loading direction details #######
             #Check if direction is already present in the table
-            direction_id = Direction.query.with_entities(Direction.direction_id).filter(Direction.direction == dir_name).first()
+            dup_direction = Direction.query.filter(Direction.direction == dir_name).first()
 
             # direction is already present, don't load it 
-            if direction_id: 
+            if dup_direction: 
                 print("Direction already present in the table")
                 pass 
             else: 
@@ -239,12 +236,12 @@ def load_bus_route():
 
             bus_route_id = Bus_Route.query.with_entities(Bus_Route.bus_route_id).filter(Bus_Route.tag == tag, Bus_Route.route_id == route.route_id, Bus_Route.direction_id == direction_id ).one()
 
-            print("Bus route id is: {} for the bus tag: {}".format(bus_route_id, tag))
+            # print("Bus route id is: {} for the bus tag: {}".format(bus_route_id, tag))
 
             for i, stop in enumerate(stop_list): 
                           
                 stop_id = Stop.query.with_entities(Stop.stop_id).filter(Stop.stop_tag == int(stop['tag']))
-                print("Stop id is {}".format(stop_id))
+                # print("Stop id is {}".format(stop_id))
 
                 #Check if stop on the bus route is already present in the table
                 dup_bus_route_stop = Bus_Route_Stop.query.filter(and_(Bus_Route_Stop.bus_route_id == bus_route_id , Bus_Route_Stop.stop_id == stop_id)).first()
@@ -275,3 +272,5 @@ if __name__ == "__main__":
     # load_region()
     # load_agency()
     # load_route()
+    # load_bus_route()
+    
