@@ -155,6 +155,7 @@ class Bus_Route(db.Model):
 
     bus = db.relationship('Route')
     bus_direction = db.relationship('Direction')
+    bus_rating_by_users = db.relationship('User_Rating')
     
     # bus_route_stop = db.relationship('Stop')
 
