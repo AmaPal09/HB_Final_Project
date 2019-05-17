@@ -28,7 +28,7 @@ class Region(db.Model):
         db.String(50), 
         nullable = False)
 
-    region_agency = db.relationship('Agency')
+    region_agency = db.relationship("Agency")
     
     def __repr__(self):
         """Show info about Region"""
@@ -60,8 +60,8 @@ class Agency(db.Model):
         db.ForeignKey('regions.region_id'),
         nullable = False)
 
-    agency_region = db.relationship('Region')
-    agency_route = db.relationship('Route')
+    agency_region = db.relationship("Region")
+    agency_route = db.relationship("Route")
 
     def __repr__(self):
         """Show info about Agency"""
@@ -92,7 +92,7 @@ class Route(db.Model):
         db.String(50),
         nullable = False)
 
-    route_agency = db.relationship('Agency')
+    route_agency = db.relationship("Agency")
 
     def __repr__(self): 
         """ Show info about Route """
@@ -145,19 +145,9 @@ class Bus_Route(db.Model):
         db.Integer, 
         db.ForeignKey('directions.direction_id'), 
         nullable = False)
-    # stop_id = db.Column(
-    #     db.Integer,
-    #     db.ForeignKey('stops.stop_id'),
-    #     nullable = False)
-    # stop_seq = db.Column(
-    #     db.Integer,
-    #     nullable = False)
 
-    bus = db.relationship('Route')
-    bus_direction = db.relationship('Direction')
-    bus_rating_by_users = db.relationship('User_Rating')
-    
-    # bus_route_stop = db.relationship('Stop')
+    bus = db.relationship("Route")
+    bus_direction = db.relationship("Direction")
 
     def __repr__(self): 
         """ Show info about Route """
@@ -193,7 +183,7 @@ class Stop(db.Model):
         db.Float(), 
         nullable = False)
 
-    stops_on_bus_route = db.relationship('Bus_Route_Stop')
+    stops_on_bus_route = db.relationship("Bus_Route_Stop")
 
     def __repr__(self): 
         """ Show info about Stop""" 
@@ -220,7 +210,7 @@ class Bus_Route_Stop(db.Model):
         db.Integer,
         nullable = False) 
 
-    bus_route_with_stop = db.relationship('Bus_Route')
+    bus_route_with_stop = db.relationship("Bus_Route")
 
     def __repr__(self): 
         """ Show info about stops on a bus route """
@@ -250,7 +240,7 @@ class User(db.Model):
         db.String(60),
         nullable = False)
 
-    user_rated = db.relationship('User_Rating')
+    user_rated = db.relationship("User_Rating")
 
     def __repr__(self): 
         """ Show info about user""" 
@@ -291,6 +281,8 @@ class Rating(db.Model):
         db.String(100),
         nullable = True )
 
+    rated_route = db.relationship("User_Rating")
+
     def __repr__(self): 
         """ Show info about user_ratings""" 
 
@@ -321,9 +313,11 @@ class User_Rating(db.Model):
         nullable = False,
         default = datetime.utcnow)
 
-    user_details = db.relationship('User')
-    bus_route_details = db.relationship('Bus_Route')
-    rating_details = db.relationship('Rating')
+    user_details = db.relationship("User")
+    bus_route_details = db.relationship("Bus_Route", backref="bus_ratings")
+    rating_details = db.relationship("Rating")
+    bus_rating_details = db.relationship("Rating", 
+                                            secondary="bus_ratings")
     
     def __repr__(self): 
         """ Show info about user""" 
