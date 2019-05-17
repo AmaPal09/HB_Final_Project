@@ -77,59 +77,37 @@ class Route(db.Model):
             self.route_id, self.agency_id, self.route_tag, self.route_title)
 
 
+class Bus(db.Model): 
+    """ Bus Model """
 
-class Direction(db.Model): 
-    """ Direction Model """
+    __tablename__ = "buses"
 
-    __tablename__ = "directions"
-
-    direction_id = db.Column(
+    bus_id = db.Column(
         db.Integer, 
         primary_key = True, 
         autoincrement = True)
-    direction = db.Column(
-        db.String(15), 
-        nullable = False)
-
-    def __repr__(self):
-        """ Show info about Direction"""
-
-        return "Direction_ID={}, Direction={}".format(
-            self.direction_id, self.direction)
-
-
-class Bus_Route(db.Model): 
-    """ Route Model """
-
-    __tablename__ = "bus_routes"
-
-    bus_route_id = db.Column(
-        db.Integer, 
-        primary_key = True, 
-        autoincrement = True)
-    title = db.Column(
+    bus_title = db.Column(
         db.String(60),
         nullable = False)
-    tag = db.Column(
+    bus_tag = db.Column(
         db.String(20),
         nullable = False)
     route_id = db.Column(
         db.Integer, 
         db.ForeignKey('routes.route_id'), 
         nullable = False)
-    direction_id = db.Column(
-        db.Integer, 
-        db.ForeignKey('directions.direction_id'), 
+    bus_direction = db.Column(
+        db.String(15), 
         nullable = False)
 
-    bus = db.relationship("Route")
-    bus_direction = db.relationship("Direction")
+    bus_route = db.relationship("Route", backref="route_buses")
+    bus_route_stops = db.relationship("Bus_Route_Stop")
 
     def __repr__(self): 
         """ Show info about Route """
 
-        return "Bus_Route_ID={}, Title={}, Tag={}, Route_Id={}, Direction_ID={}".format(
-            self.bus_route_id, self.title, self.tag, self.route_id, self.direction_id)
+        return "Bus_ID={}, Bus_Title={}, Bus_Tag={}, Route_Id={}, Bus_Direction={}".format(
+            self.bus_id, self.bus_title, self.bus_tag, self.route_id, self.bus_direction)
 
 
 #Details of various stops of various bus routes
@@ -159,7 +137,10 @@ class Stop(db.Model):
         db.Float(), 
         nullable = False)
 
-    stops_on_bus_route = db.relationship("Bus_Route_Stop")
+    bus_route_stops = db.relationship("Bus_Route_Stop")
+    stop_buses = db.relationship("Bus", 
+        secondary = "bus_route_stops",
+        backref = "bus_stops")
 
     def __repr__(self): 
         """ Show info about Stop""" 
@@ -174,9 +155,9 @@ class Bus_Route_Stop(db.Model):
 
     __tablename__ = "bus_route_stops"
 
-    bus_route_id = db.Column( 
+    bus_id = db.Column( 
         db.Integer,
-        db.ForeignKey('bus_routes.bus_route_id'),
+        db.ForeignKey('buses.bus_id'),
         primary_key = True) 
     stop_id = db.Column(
         db.Integer,
@@ -186,13 +167,14 @@ class Bus_Route_Stop(db.Model):
         db.Integer,
         nullable = False) 
 
-    bus_route_with_stop = db.relationship("Bus_Route")
+    bus_details = db.relationship("Bus")
+    stop_details = db.relationship("Stop")
 
     def __repr__(self): 
         """ Show info about stops on a bus route """
 
-        return "Bus_Route_ID={}, Stop_ID={}, Stop_Seq={}".format(
-            self.bus_route_id, self.stop_id, self.stop_seq)
+        return "Bus_ID={}, Stop_ID={}, Stop_Seq={}".format(
+            self.bus_id, self.stop_id, self.stop_seq)
 
 
 #User details
