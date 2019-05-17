@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Bus Routes for {{route.route_title}}</h2>
+
+        <ul>
+            {% for bus in bus_routes %}
+            <li>
+                Bus route Title: {{bus.title}} &nbsp;&nbsp;&nbsp;&nbsp;
+                Bus route Tag: {{bus.tag}}
+                <ul>
+                    {% for rating in bus.bus_rating_by_users %}
+                    <li>
+                        {% for rating_detail in ratings_details_list %}
+
+                            {% if rating_detail.rating_id == rating.rating_id%}
+
+                                Crowd: {{rating_detail.crowd_rating}} &nbsp;
+                                Time: {{rating_detail.time_rating}} &nbsp;
+                                Cleanliness: {{rating_detail.cleanliness_rating}} &nbsp;
+                                Safety: {{rating_detail.safety_rating}} &nbsp;
+                                View: {{rating_detail.outer_view_rating}} &nbsp;
+                            
+                            {% endif %}
+
+                        {% endfor %}
+                    </li>
+                    {%endfor%}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+
+        Rate this route: 
+        <select name="crowd_rating">
+            <option value="1">1</option>
+        </select>
+
+{% endblock %}

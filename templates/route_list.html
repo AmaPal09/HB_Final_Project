@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Routes for SF_Muni</h2>
+
+    <ul>
+        {% for route in routes %}
+        <li>
+            Route Tag: {{route.route_tag}} &nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="/routes/{{route.route_id}}">Route Title: {{route.route_title}}</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
