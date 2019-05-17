@@ -59,21 +59,18 @@ def load_route():
 
     print("Routes")
 
-    # Route.query.delete()
-    # Bus_Route.query.delete()
+    route_info = open("seed_data/sfmuni_routes.json").read()
+    route_json = json.loads(route_info)
 
-    route_json = open("seed_data/sfmuni_routes.json").read()
-    route_info = json.loads(route_json)
-
-    for i in range(len(route_info['route'])): 
+    for i in range(len(route_json['route'])): 
         agency_id = 49 
 
         # check if route is already present
         dup_route = Route.query.filter(
             and_(
                 Route.agency_id==agency_id, 
-                Route.route_tag==route_info['route'][i]['tag'], 
-                Route.route_title==route_info['route'][i]['title']
+                Route.route_tag==route_json['route'][i]['tag'], 
+                Route.route_title==route_json['route'][i]['title']
                 )
             ).first() 
 
@@ -84,8 +81,9 @@ def load_route():
             # Add the route to the table as it is not alreaty present
             new_route = Route(
                 agency_id=agency_id,
-                route_tag=route_info['route'][i]['tag'],
-                route_title=route_info['route'][i]['title'])
+                route_tag=route_json['route'][i]['tag'],
+                route_title=route_json['route'][i]['title']
+                )
             db.session.add(new_route)
 
     db.session.commit()
