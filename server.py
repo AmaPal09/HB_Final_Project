@@ -28,8 +28,9 @@ def route_details(route_id):
     
     route = Route.query.filter(Route.route_id == int(route_id)).one()
     bus_routes = Bus_Route.query.filter(
-        Bus_Route.route_id == route.route_id).options(
-        db.joinedload('bus_ratings'), db.joinedload(bus_rating_details)
+        Bus_Route.route_id==route.route_id
+        ).options(
+        db.joinedload('bus_ratings')
         ).all()
     
     #bus_routes is a list of objs of class Bus_Route

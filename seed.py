@@ -6,7 +6,7 @@ import requests
 from datetime import datetime
 from sqlalchemy import and_, or_, not_
 
-from model import Region, Agency, Direction, Route, Stop, Bus_Route, Bus_Route_Stop
+from model import Agency, Direction, Route, Stop, Bus_Route, Bus_Route_Stop
 from model import connect_to_db, db 
 
 from server import app
@@ -15,61 +15,37 @@ from pprint import pprint
 
 print("Start of seed file")
 
-def load_region(): 
-    """ Load all regions available from the next bus API """
-
-    print("Regions")
-
-    # Agency.query.delete()
-    # Region.query.delete()
-    
-    agencies_json = open("seed_data/agencies.json").read()
-    agencies_info = json.loads(agencies_json)
-
-    for i in range(len(agencies_info['agency'])): 
-        # look for region record in regions table
-        dup_region = Region.query.filter(Region.region == agencies_info['agency'][i]['regionTitle']).first()
-        
-        if dup_region: 
-            # if region is present in table, go to next region
-            continue
-        else: 
-            # Add the region to the table as it is not alreaty present
-            region = Region(region=agencies_info['agency'][i]['regionTitle'])
-            db.session.add(region)
-
-    # Commit all the newly added users to the regions table 
-    db.session.commit()
-
-    print("Regions loaded")
-
 
 def load_agency(): 
-    """ Load all regions available from the next bus API """
+    """ Load all agencies available from the next bus API """
 
     print("Agencies")
 
     # Read agencies from the API JSON file
-    agencies_json = open("seed_data/agencies.json").read()
-    agencies_info = json.loads(agencies_json)
+    agencies_info = open("seed_data/agencies.json").read()
+    agencies_json = json.loads(agencies_info)
 
     # Extract and load details for each of the agencies
-    for i in range(len(agencies_info['agency'])): 
-        # get region id for provided region
-        region_id = Region.query.with_entities(Region.region_id).filter(Region.region == agencies_info['agency'][i]['regionTitle'] ).first()
-        
+    for i in range(len(agencies_json['agency'])): 
         # check if record present for the agency in agencies table. 
-        dup_agency = Agency.query.filter(and_(Agency.agency_tag == agencies_info['agency'][i]['tag'], Agency.agency_title == agencies_info['agency'][i]['title'])).first()
+        dup_agency = Agency.query.filter(
+            and_(
+                Agency.agency_tag == agencies_json['agency'][i]['tag'], 
+                Agency.agency_title == agencies_json['agency'][i]['title']
+                )
+            ).first()
 
         if dup_agency: 
             # if agency is present in table, go to next agency
             continue
         else: 
             # Add the agency to the table as it is not alreaty present
-            new_agency = Agency(agency_tag=agencies_info['agency'][i]['tag'], 
-                agency_short_title=agencies_info['agency'][i].get('shortTitle',None),
-                agency_title=agencies_info['agency'][i]['title'],
-                region_id=region_id) 
+            new_agency = Agency(
+                agency_tag=agencies_json['agency'][i]['tag'], 
+                agency_short_title=agencies_json['agency'][i].get('shortTitle',None),
+                agency_title=agencies_json['agency'][i]['title'],
+                region=agencies_json['agency'][i]['regionTitle']
+                ) 
             db.session.add(new_agency)
 
     # Commit all the newly added agencies to the DB
@@ -93,14 +69,21 @@ def load_route():
         agency_id = 49 
 
         # check if route is already present
-        dup_route = Route.query.filter(and_(Route.agency_id== agency_id, Route.route_tag == route_info['route'][i]['tag'], Route.route_title == route_info['route'][i]['title'])).first() 
+        dup_route = Route.query.filter(
+            and_(
+                Route.agency_id==agency_id, 
+                Route.route_tag==route_info['route'][i]['tag'], 
+                Route.route_title==route_info['route'][i]['title']
+                )
+            ).first() 
 
         if dup_route: 
             # if route is present in table, go to next route
             continue
         else: 
             # Add the route to the table as it is not alreaty present
-            new_route = Route(agency_id=agency_id,
+            new_route = Route(
+                agency_id=agency_id,
                 route_tag=route_info['route'][i]['tag'],
                 route_title=route_info['route'][i]['title'])
             db.session.add(new_route)
@@ -123,7 +106,11 @@ def load_bus_route():
 
         ####### start of accessing the API #######
         # get the agency details for this route
-        agency_tag = Agency.query.with_entities(Agency.agency_tag).filter(Agency.agency_id==route.agency_id).one()
+        agency_tag = Agency.query.with_entities(
+            Agency.agency_tag
+            ).filter(
+            Agency.agency_id==route.agency_id
+            ).one()
 
         # create parameter dict for the API request
         payload = {"command":"routeConfig", 
@@ -132,7 +119,9 @@ def load_bus_route():
         }
 
         # Get bus route details from the API
-        req = requests.get("http://webservices.nextbus.com/service/publicJSONFeed?", params = payload)
+        req = requests.get(
+            "http://webservices.nextbus.com/service/publicJSONFeed?", 
+            params = payload)
         
         # convert API string into json
         route_json = req.json()
@@ -151,7 +140,15 @@ def load_bus_route():
         for stop in stops_on_route: 
             print("Load stops")
             # check if stop is already present in the table. 
-            stop_id = Stop.query.with_entities(Stop.stop_id).filter(and_(Stop.stop_tag == int(stop['tag']), Stop.stop_id_tag ==int(stop['stopId']), Stop.stop_title == stop['title'] )).first()
+            stop_id = Stop.query.with_entities(
+                Stop.stop_id
+                ).filter(
+                and_(
+                    Stop.stop_tag==int(stop['tag']), 
+                    Stop.stop_id_tag==int(stop['stopId']), 
+                    Stop.stop_title==stop['title']
+                    )
+                ).first()
 
             # if stop already present, dont load it
             if stop_id: 
@@ -160,11 +157,13 @@ def load_bus_route():
             else: 
                 # stop not present, so load it
                 print("Load new stop {}".format(stop))
-                new_stop = Stop(stop_tag = int(stop['tag']),  
+                new_stop = Stop(
+                    stop_tag = int(stop['tag']),  
                     stop_id_tag = int(stop['stopId']),
                     stop_title = stop['title'], 
                     stop_lon = float(stop['lon']), 
-                    stop_lat = float(stop['lat']))
+                    stop_lat = float(stop['lat'])
+                    )
 
                 db.session.add(new_stop)
 
@@ -185,7 +184,9 @@ def load_bus_route():
 
             ####### start of loading direction details #######
             #Check if direction is already present in the table
-            dup_direction = Direction.query.filter(Direction.direction == dir_name).first()
+            dup_direction = Direction.query.filter(
+                Direction.direction == dir_name
+                ).first()
 
             # direction is already present, don't load it 
             if dup_direction: 
@@ -204,11 +205,21 @@ def load_bus_route():
 
             ####### start of loading bus route #######
         
-            direction_id = Direction.query.with_entities(Direction.direction_id).filter(Direction.direction == dir_name).one()
+            direction_id = Direction.query.with_entities(
+                Direction.direction_id
+                ).filter(
+                Direction.direction==dir_name
+                ).one()
             print('The direction id is: {}'.format(direction_id))
 
             #Check if bus route is already present in the table
-            bus_route = Bus_Route.query.filter(and_(Bus_Route.tag == route_direction['tag'], Bus_Route.route_id == route.route_id, Bus_Route.direction_id == direction_id)).first()
+            bus_route = Bus_Route.query.filter(
+                and_(
+                    Bus_Route.tag==route_direction['tag'], 
+                    Bus_Route.route_id==route.route_id, 
+                    Bus_Route.direction_id==direction_id
+                    )
+                ).first()
             
             if bus_route: 
                 # bus_route is already present, don't load it 
@@ -216,7 +227,8 @@ def load_bus_route():
                 pass
             else: 
                 # bus route is not present, so load it. 
-                new_bus_route = Bus_Route(title = route_direction['title'],
+                new_bus_route = Bus_Route(
+                    title = route_direction['title'],
                     tag = route_direction['tag'] , 
                     route_id = route.route_id , 
                     direction_id = direction_id 
@@ -234,24 +246,40 @@ def load_bus_route():
             stop_list = route_direction['stop']
             tag = route_direction['tag']
 
-            bus_route_id = Bus_Route.query.with_entities(Bus_Route.bus_route_id).filter(Bus_Route.tag == tag, Bus_Route.route_id == route.route_id, Bus_Route.direction_id == direction_id ).one()
+            bus_route_id = Bus_Route.query.with_entities(
+                Bus_Route.bus_route_id
+                ).filter(
+                Bus_Route.tag==tag, 
+                Bus_Route.route_id==route.route_id, 
+                Bus_Route.direction_id==direction_id
+                ).one()
 
             # print("Bus route id is: {} for the bus tag: {}".format(bus_route_id, tag))
 
             for i, stop in enumerate(stop_list): 
                           
-                stop_id = Stop.query.with_entities(Stop.stop_id).filter(Stop.stop_tag == int(stop['tag']))
+                stop_id = Stop.query.with_entities(
+                    Stop.stop_id
+                    ).filter(
+                    Stop.stop_tag==int(stop['tag'])
+                    )
+
                 # print("Stop id is {}".format(stop_id))
 
                 #Check if stop on the bus route is already present in the table
-                dup_bus_route_stop = Bus_Route_Stop.query.filter(and_(Bus_Route_Stop.bus_route_id == bus_route_id , Bus_Route_Stop.stop_id == stop_id)).first()
+                dup_bus_route_stop = Bus_Route_Stop.query.filter(
+                    and_(
+                        Bus_Route_Stop.bus_route_id==bus_route_id, 
+                        Bus_Route_Stop.stop_id==stop_id)
+                    ).first()
                 
                 if dup_bus_route_stop: 
                     # bus_route_stop is already present, don't load it 
                     continue
                 else: 
                     # bus_route_stop is not present, so load it 
-                    new_bus_route_stop = Bus_Route_Stop(bus_route_id = bus_route_id,
+                    new_bus_route_stop = Bus_Route_Stop(
+                        bus_route_id = bus_route_id,
                         stop_id = stop_id, 
                         stop_seq = i)
                     db.session.add(new_bus_route_stop)

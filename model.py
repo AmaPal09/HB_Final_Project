@@ -15,28 +15,6 @@ db = SQLAlchemy()
 
 #Details of various areas and bus agencies in those areas
 
-class Region(db.Model):
-    """Region Model."""
-
-    __tablename__ = "regions"
-
-    region_id = db.Column( 
-        db.Integer, 
-        primary_key = True, 
-        autoincrement = True)
-    region = db.Column(
-        db.String(50), 
-        nullable = False)
-
-    region_agency = db.relationship("Agency")
-    
-    def __repr__(self):
-        """Show info about Region"""
-
-        return "Region_ID={}, Region={}".format(
-            self.region_id, self.region)
-
-
 class Agency(db.Model):
     """Agency Model."""
 
@@ -55,19 +33,17 @@ class Agency(db.Model):
     agency_title = db.Column(
         db.String(50), 
         nullable = False)
-    region_id = db.Column(
-        db.Integer, 
-        db.ForeignKey('regions.region_id'),
+    region = db.Column(
+        db.String(50), 
         nullable = False)
 
-    agency_region = db.relationship("Region")
     agency_route = db.relationship("Route")
 
     def __repr__(self):
         """Show info about Agency"""
 
-        return "Agency_ID={}, Agency_Tag={}, Agency_short_title={}, Agency_Title={}, Region_ID={}" .format(
-            self.agency_id, self.agency_tag, self.agency_short_title, self.agency_title, self.region_id)
+        return "Agency_ID={}, Agency_Tag={}, Agency_short_title={}, Agency_Title={}, Region={}" .format(
+            self.agency_id, self.agency_tag, self.agency_short_title, self.agency_title, self.region)
 
 
 #Details of various bus routes for an agency
