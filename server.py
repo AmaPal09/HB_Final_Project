@@ -1,6 +1,6 @@
 from flask import (Flask, render_template, redirect, request, flash,
                     session)
-from model import connect_to_db, db, Route, Bus_Route, User_Rating, Rating
+from model import connect_to_db, db, Route, Bus, User_Rating, Rating
 
 app = Flask(__name__)
 app.secret_key = 'abc'
@@ -27,8 +27,8 @@ def route_details(route_id):
     """ Display the bus routes for the selected route """ 
     
     route = Route.query.filter(Route.route_id == int(route_id)).one()
-    bus_routes = Bus_Route.query.filter(
-        Bus_Route.route_id==route.route_id
+    buses = Bus.query.filter(
+        Bus.route_id==route.route_id
         ).options(
         db.joinedload('bus_ratings')
         ).all()
@@ -36,9 +36,9 @@ def route_details(route_id):
     #bus_routes is a list of objs of class Bus_Route
 
     ratings_details_list = []
-    for bus_route in bus_routes: 
+    for bus in buses: 
         #for each instance, bus_route.bus_ratings is a list of objs of class User_Rating
-        for bus_user_rating in bus_route.bus_ratings: 
+        for bus_user_rating in bus.bus_ratings: 
             ratings_details_list += Rating.query.filter(
                 Rating.rating_id == bus_user_rating.rating_id
                 ).all()
@@ -51,7 +51,7 @@ def route_details(route_id):
     return render_template(
         "route_details.html", 
         route=route, 
-        bus_routes = bus_routes, 
+        buses = buses, 
         ratings_details_list = ratings_details_list
         )
 

@@ -262,9 +262,9 @@ class User_Rating(db.Model):
         db.Integer, 
         db.ForeignKey('ratings.rating_id'), 
         primary_key = True)
-    bus_route_id = db.Column(
+    bus_id = db.Column(
         db.Integer, 
-        db.ForeignKey('bus_routes.bus_route_id'), 
+        db.ForeignKey('buses.bus_id'), 
         primary_key = True)
     trip_datetime = db.Column(
         db.DateTime,
@@ -272,7 +272,7 @@ class User_Rating(db.Model):
         default = datetime.utcnow)
 
     user_details = db.relationship("User")
-    bus_route_details = db.relationship("Bus_Route", backref="bus_ratings")
+    bus_route_details = db.relationship("Bus", backref="bus_ratings")
     rating_details = db.relationship("Rating")
     bus_rating_details = db.relationship("Rating", 
                                             secondary="bus_ratings")
@@ -280,8 +280,8 @@ class User_Rating(db.Model):
     def __repr__(self): 
         """ Show info about user""" 
 
-        return "User_ID={}, Rating_ID={}, Bus_Route_ID={}, Trip_Datetime={}".format(
-            self.user_id, self.rating_id, self.bus_route_id, self.trip_datetime)
+        return "User_ID={}, Rating_ID={}, Bus_ID={}, Trip_Datetime={}".format(
+            self.user_id, self.rating_id, self.bus_id, self.trip_datetime)
 
 
 ################################################################################
