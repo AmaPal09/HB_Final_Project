@@ -5,24 +5,16 @@
         <ul>
             {% for bus in buses %}
             <li>
-                Bus route Title: {{bus.title}} &nbsp;&nbsp;&nbsp;&nbsp;
-                Bus route Tag: {{bus.tag}}
+                Bus route Title: {{bus.bus_title}} &nbsp;&nbsp;&nbsp;&nbsp;
+                Bus route Tag: {{bus.bus_tag}}
                 <ul>
-                    {% for rating in bus.bus_rating_by_users %}
+                    {% for rating in bus.bus_ratings_details %}
                     <li>
-                        {% for rating_detail in ratings_details_list %}
-
-                            {% if rating_detail.rating_id == rating.rating_id%}
-
-                                Crowd: {{rating_detail.crowd_rating}} &nbsp;
-                                Time: {{rating_detail.time_rating}} &nbsp;
-                                Cleanliness: {{rating_detail.cleanliness_rating}} &nbsp;
-                                Safety: {{rating_detail.safety_rating}} &nbsp;
-                                View: {{rating_detail.outer_view_rating}} &nbsp;
-                            
-                            {% endif %}
-
-                        {% endfor %}
+                        Crowd: {{rating.crowd_rating}} &nbsp;
+                        Time: {{rating.time_rating}} &nbsp;
+                        Cleanliness: {{rating.cleanliness_rating}} &nbsp;
+                        Safety: {{rating.safety_rating}} &nbsp;
+                        View: {{rating.outer_view_rating}} &nbsp;
                     </li>
                     {%endfor%}
                 </ul>

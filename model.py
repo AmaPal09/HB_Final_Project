@@ -140,7 +140,7 @@ class Stop(db.Model):
 
     bus_route_stops = db.relationship("Bus_Route_Stop")
     stop_buses = db.relationship("Bus", 
-        secondary = "bus_route_stops",
+        secondary = "bus_route_stops",  #secondary needs to be the name of table. 
         backref = "bus_stops")
 
     def __repr__(self): 
@@ -276,7 +276,7 @@ class Rating(db.Model):
 
     bus_ratings = db.relationship("User_Rating")
     rating_bus_details = db.relationship("Bus", 
-        secondary="bus_ratings", 
+        secondary="user_ratings",                #secondary needs to be the name of table. 
         backref="bus_ratings_details")
 
     def __repr__(self): 

@@ -36,25 +36,15 @@ def route_details(route_id):
     
     #bus_routes is a list of objs of class Bus_Route
     print(type(buses))
+    print(buses[0])
 
-    ratings_details_list = []
-    for bus in buses: 
-        #for each instance, bus_route.bus_ratings is a list of objs of class User_Rating
-        for bus_user_rating in bus.bus_ratings_details: 
-            ratings_details_list += Rating.query.filter(
-                Rating.rating_id == bus_user_rating.rating_id
-                ).all()
-
-            
-    print(type(ratings_details_list))
-    print(type(ratings_details_list[0]))
-    print(ratings_details_list)
+    print(type(buses[0].bus_ratings_details))
+    print(buses[0].bus_ratings_details[0])
 
     return render_template(
         "route_details.html", 
         route=route, 
-        buses = buses, 
-        ratings_details_list = ratings_details_list
+        buses = buses
         )
 
 
