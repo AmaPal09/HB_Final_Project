@@ -274,8 +274,8 @@ class User_Rating(db.Model):
     user_details = db.relationship("User")
     bus_route_details = db.relationship("Bus", backref="bus_ratings")
     rating_details = db.relationship("Rating")
-    bus_rating_details = db.relationship("Rating", 
-                                            secondary="bus_ratings")
+    # bus_rating_details = db.relationship("Rating", 
+    #                                         secondary="bus_ratings")
     
     def __repr__(self): 
         """ Show info about user""" 
