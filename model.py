@@ -198,6 +198,8 @@ class User(db.Model):
     user_email = db.Column(
         db.String(60),
         nullable = False)
+    user_pwd_hash = db.Column(
+        db.String(128))
 
     user_rated = db.relationship("User_Rating")
 
