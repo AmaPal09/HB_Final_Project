@@ -33,13 +33,9 @@ def route_details(route_id):
         ).options(db.joinedload("bus_ratings_details")
         ).all()
     print("Step3")
+    print(buses[0].bus_ratings_details)
     
     #bus_routes is a list of objs of class Bus_Route
-    print(type(buses))
-    print(buses[0])
-
-    print(type(buses[0].bus_ratings_details))
-    print(buses[0].bus_ratings_details[0])
 
     return render_template(
         "route_details.html", 

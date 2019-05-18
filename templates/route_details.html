@@ -8,15 +8,26 @@
                 Bus route Title: {{bus.bus_title}} &nbsp;&nbsp;&nbsp;&nbsp;
                 Bus route Tag: {{bus.bus_tag}}
                 <ul>
-                    {% for rating in bus.bus_ratings_details %}
-                    <li>
-                        Crowd: {{rating.crowd_rating}} &nbsp;
-                        Time: {{rating.time_rating}} &nbsp;
-                        Cleanliness: {{rating.cleanliness_rating}} &nbsp;
-                        Safety: {{rating.safety_rating}} &nbsp;
-                        View: {{rating.outer_view_rating}} &nbsp;
-                    </li>
-                    {%endfor%}
+                    {% if bus.bus_ratings_details is defined and bus.bus_ratings_details|length>0 %}
+                        {% for rating in bus.bus_ratings_details %}
+                        <li>
+                            Crowd: {{rating.crowd_rating}} &nbsp;
+                            Time: {{rating.time_rating}} &nbsp;
+                            Cleanliness: {{rating.cleanliness_rating}} &nbsp;
+                            Safety: {{rating.safety_rating}} &nbsp;
+                            View: {{rating.outer_view_rating}} &nbsp;
+                        </li>
+                        {%endfor%}
+                    {% else %}
+                    <p>
+                        Crowd: &nbsp; Time: &nbsp; Cleanliness: &nbsp; 
+                        Safety: &nbsp; View: &nbsp; 
+                    </p>
+                    <p>
+                        No ratings present. 
+                        Please rate this route. 
+                    </p>
+                    {% endif %}
                 </ul>
             </li>
             {% endfor %}
