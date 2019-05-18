@@ -2,7 +2,22 @@
 {% block content %}
     <h2>Routes for SF_Muni</h2>
 
-    <ul>
+    <table>
+        <tr>
+            <th>Route Tag</th>
+            <th>Route Title</th>
+        </tr>
+        {% for route in routes %}
+            <tr>
+                <td>{{route.route_tag}}</td>
+                <td><a href="/routes/{{route.route_id}}">{{route.route_title}}</a></td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+
+    <!-- <ul>
         {% for route in routes %}
         <li>
             Route Tag: {{route.route_tag}} &nbsp;&nbsp;&nbsp;&nbsp;
@@ -10,5 +25,5 @@
         </li>
         {% endfor %}
     </ul>
-
+ -->
 {% endblock %}
