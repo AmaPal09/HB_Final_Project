@@ -2,6 +2,9 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+
+# flask lib to store and validate hashed passwords
+from werkzeug.security import generate_password_hash, check_password_hash 
 from datetime import datetime
 # from db import PrimaryKeyConstraint
 # from flask_sqlalchemy import SQLALCHEMY_ECHO
@@ -199,7 +202,8 @@ class User(db.Model):
         db.String(60),
         nullable = False)
     user_pwd_hash = db.Column(
-        db.String(128))
+        db.String(128), 
+        nullable = False)
 
     user_rated = db.relationship("User_Rating")
 
@@ -208,6 +212,16 @@ class User(db.Model):
 
         return "User_ID={}, User_First_Name={}, User_Last_Name={}, User_Email={}".format(
             self.user_id, self.user_fname, self.user_lname, self.user_email)
+
+    def set_user_pwd(self, pwd): 
+        """ Add a hashed password for the user"""
+
+        self.user_pwd_hash = generate_password_hash(pwd)
+
+    def check_user_pwd(self, pwd): 
+        """ Validate is password is correct for the user"""
+
+        return check_password_hash(self.user_pwd_hash, pwd)
 
 
 class User_Rating(db.Model): 

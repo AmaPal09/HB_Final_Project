@@ -1,6 +1,5 @@
-from flask import (Flask, render_template, redirect, request, flash,
-                    session)
-from model import connect_to_db, db, Route, Bus, User_Rating, Rating
+from flask import (Flask, render_template, redirect, request, flash, session)
+from model import connect_to_db, db, Route, Bus, User, User_Rating, Rating
 
 app = Flask(__name__)
 app.secret_key = 'abc'
@@ -49,7 +48,32 @@ def login_form():
     """User login form"""
 
     return render_template("login_form.html")
-    
+
+
+@app.route('/login', methods=['POST'])
+def user_login(): 
+    """ Validate password and log user in"""
+
+    print("Entered /login POST route")
+    email = request.form.get("email")
+    print(email)
+    password = request.form.get("password")
+    print(password)
+
+    user = User.query.filter(User.user_email == email).first()
+
+    # print(user)
+    # print(user.check_user_pwd(password))
+    # print(session.keys())
+    if user is not None and user.check_user_pwd(password) and 'user_id' not in session.keys(): 
+        session['user_id'] = user.user_id
+        flash("Logged in")
+        session.modified = True
+        return redirect("/")
+    else: 
+        flash("Log in unsuccessful")
+        return redirect("/")
+
 
 if __name__ == "__main__": 
     app.debug = True
