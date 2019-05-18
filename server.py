@@ -44,9 +44,12 @@ def route_details(route_id):
         )
 
 
+@app.route('/login', methods=['GET'])
+def login_form(): 
+    """User login form"""
 
-
-
+    return render_template("login_form.html")
+    
 
 if __name__ == "__main__": 
     app.debug = True
