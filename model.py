@@ -102,6 +102,7 @@ class Bus(db.Model):
 
     bus_route = db.relationship("Route", backref="route_buses")
     bus_route_stops = db.relationship("Bus_Route_Stop")
+    bus_ratings = db.relationship("User_Rating")
 
     def __repr__(self): 
         """ Show info about Route """
@@ -207,6 +208,40 @@ class User(db.Model):
             self.user_id, self.user_fname, self.user_lname, self.user_email)
 
 
+class User_Rating(db.Model): 
+    """ User Ratings Model"""
+
+    __tablename__ = "user_ratings"
+
+    user_id = db.Column(
+        db.Integer, 
+        db.ForeignKey('users.user_id'),
+        primary_key = True) 
+    rating_id = db.Column(
+        db.Integer, 
+        db.ForeignKey('ratings.rating_id'), 
+        primary_key = True)
+    bus_id = db.Column(
+        db.Integer, 
+        db.ForeignKey('buses.bus_id'), 
+        primary_key = True)
+    trip_datetime = db.Column(
+        db.DateTime,
+        nullable = False,
+        default = datetime.utcnow)
+
+    user_details = db.relationship("User")
+    rate_bus_details = db.relationship("Bus")
+    rated_rating_details = db.relationship("Rating")
+    
+    def __repr__(self): 
+        """ Show info about user""" 
+
+        return "User_ID={}, Rating_ID={}, Bus_ID={}, Trip_Datetime={}".format(
+            self.user_id, self.rating_id, self.bus_id, self.trip_datetime)
+
+
+
 class Rating(db.Model): 
     """ Ratings Model"""
 
@@ -239,7 +274,10 @@ class Rating(db.Model):
         db.String(100),
         nullable = True )
 
-    rated_route = db.relationship("User_Rating")
+    bus_ratings = db.relationship("User_Rating")
+    rating_bus_details = db.relationship("Bus", 
+        secondary="bus_ratings", 
+        backref="bus_ratings_details")
 
     def __repr__(self): 
         """ Show info about user_ratings""" 
@@ -248,40 +286,6 @@ class Rating(db.Model):
             self.rating_id, self.rating_datetime, self.crowd_rating, self.time_rating, self.cleanliness_rating, self.safety_rating, self.outer_view_rating, self.rating_text)
 
 
-
-class User_Rating(db.Model): 
-    """ User Ratings Model"""
-
-    __tablename__ = "user_ratings"
-
-    user_id = db.Column(
-        db.Integer, 
-        db.ForeignKey('users.user_id'),
-        primary_key = True) 
-    rating_id = db.Column(
-        db.Integer, 
-        db.ForeignKey('ratings.rating_id'), 
-        primary_key = True)
-    bus_id = db.Column(
-        db.Integer, 
-        db.ForeignKey('buses.bus_id'), 
-        primary_key = True)
-    trip_datetime = db.Column(
-        db.DateTime,
-        nullable = False,
-        default = datetime.utcnow)
-
-    user_details = db.relationship("User")
-    bus_route_details = db.relationship("Bus", backref="bus_ratings")
-    rating_details = db.relationship("Rating")
-    # bus_rating_details = db.relationship("Rating", 
-    #                                         secondary="bus_ratings")
-    
-    def __repr__(self): 
-        """ Show info about user""" 
-
-        return "User_ID={}, Rating_ID={}, Bus_ID={}, Trip_Datetime={}".format(
-            self.user_id, self.rating_id, self.bus_id, self.trip_datetime)
 
 
 ################################################################################

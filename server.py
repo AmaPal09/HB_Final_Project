@@ -30,16 +30,17 @@ def route_details(route_id):
     print("Step2")
     buses = Bus.query.filter(
         Bus.route_id==route.route_id
-        ).options(db.joinedload("bus_ratings")
+        ).options(db.joinedload("bus_ratings_details")
         ).all()
     print("Step3")
     
     #bus_routes is a list of objs of class Bus_Route
+    print(type(buses))
 
     ratings_details_list = []
     for bus in buses: 
         #for each instance, bus_route.bus_ratings is a list of objs of class User_Rating
-        for bus_user_rating in bus.bus_ratings: 
+        for bus_user_rating in bus.bus_ratings_details: 
             ratings_details_list += Rating.query.filter(
                 Rating.rating_id == bus_user_rating.rating_id
                 ).all()
