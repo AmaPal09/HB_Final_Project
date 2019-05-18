@@ -25,13 +25,14 @@ def route_list():
 @app.route('/routes/<route_id>')
 def route_details(route_id): 
     """ Display the bus routes for the selected route """ 
-    
+    print("Step1")
     route = Route.query.filter(Route.route_id == int(route_id)).one()
+    print("Step2")
     buses = Bus.query.filter(
         Bus.route_id==route.route_id
-        ).options(
-        db.joinedload('bus_ratings')
+        ).options(db.joinedload("bus_ratings")
         ).all()
+    print("Step3")
     
     #bus_routes is a list of objs of class Bus_Route
 
