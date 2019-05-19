@@ -54,11 +54,11 @@ def login_form():
 def user_login(): 
     """ Validate password and log user in"""
 
-    print("Entered /login POST route")
+    # print("Entered /login POST route")
     email = request.form.get("email")
-    print(email)
+    # print(email)
     password = request.form.get("password")
-    print(password)
+    # print(password)
 
     user = User.query.filter(User.user_email == email).first()
 
@@ -73,6 +73,26 @@ def user_login():
     else: 
         flash("Log in unsuccessful")
         return redirect("/")
+
+
+@app.route('/logout')
+def logout(): 
+    print(session)
+
+    if 'user_id' in session: 
+        session.pop('user_id')
+        flash("Logged out")
+        print(session)
+
+    return redirect("/")
+
+
+@app.route('/signin', methods=['GET'])
+def user_signin(): 
+    """ Render form for user signin"""
+
+    return render_template("user_signin.html")
+
 
 
 if __name__ == "__main__": 
