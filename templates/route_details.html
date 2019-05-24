@@ -29,13 +29,47 @@
                     </p>
                     {% endif %}
                 </ul>
+                <br><br> Rate this bus route: 
+                <form action="/rate_bus/{{bus.bus_id}}" method="POST">
+                    <p>Rate how crowded the bus was?
+                    <select name="crowd_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Rate how crowded the bus was?
+                    <select name="time_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Rate how clean the bus was?
+                    <select name="cleanliness_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Rate how safe the bus was?
+                    <select name="safety_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Rate how was the view from the bus?
+                    <select name="outer_view_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Add your comments here
+                    <label>Text: </label>
+                    <input type="text" name="rating_text" required></p>
+                    <button type="submit">Submit</button>
+                    <br><br>
+                </form>
             </li>
             {% endfor %}
         </ul>
-
-        Rate this route: 
-        <select name="crowd_rating">
-            <option value="1">1</option>
-        </select>
+        
 
 {% endblock %}
