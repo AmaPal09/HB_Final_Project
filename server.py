@@ -90,6 +90,9 @@ def logout():
         session.pop('user_id')
         flash("Logged out")
         print(session)
+    else: 
+        flash("No user logged in currently")
+        print(session)
 
     return redirect("/")
 
