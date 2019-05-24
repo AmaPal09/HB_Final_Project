@@ -54,34 +54,39 @@ def login_form():
 
 @app.route('/login', methods=['POST'])
 def user_login(): 
-    """ Validate password and log user in"""
-
-    # print("Entered /login POST route")
-    email = request.form.get("email")
-    # print(email)
-    password = request.form.get("password")
-    # print(password)
-
-    user = User.query.filter(User.user_email == email).first()
-
-    # print(user)
-    # print(user.check_user_pwd(password))
-    # print(session.keys())
-    if user is not None and user.check_user_pwd(password) and 'user_id' not in session.keys(): 
-        session['user_id'] = user.user_id
-        flash("Logged in")
-        session.modified = True
+    """ Validate email id and password and log the user in"""
+    
+    # Back to homepage if user is alreay logged in
+    if is_logged_in(): 
+        flash("User already logged in")
         return redirect("/")
     else: 
-        flash("Log in unsuccessful")
-        return redirect("/")
+        # print("Entered /login POST route")
+        email = request.form.get("email")
+        # print(email)
+        password = request.form.get("password")
+        # print(password)
+
+        user = User.query.filter(User.user_email == email).first()
+
+        # print(user)
+        # print(user.check_user_pwd(password))
+        # print(session.keys())
+        if user is not None and user.check_user_pwd(password) and 'user_id' not in session.keys(): 
+            session['user_id'] = user.user_id
+            flash("Logged in")
+            session.modified = True
+            return redirect("/")
+        else: 
+            flash("Log in unsuccessful")
+            return redirect("/")
 
 
 @app.route('/logout')
 def logout(): 
     print(session)
 
-    if 'user_id' in session: 
+    if is_logged_in(): 
         session.pop('user_id')
         flash("Logged out")
         print(session)
@@ -107,21 +112,18 @@ def user_signin():
         print("User exists")
         return redirect("/login")
     else: 
-        fname = request.form.get("fname")
-        lname = request.form.get("lname")
-        pwd = request.form.get("password")
-
         new_user = User(
-            user_fname = fname, 
-            user_lname = lname, 
+            user_fname = request.form.get("fname"), 
+            user_lname = request.form.get("lname"), 
             user_email = email, 
-            user_pwd_hash = generate_password_hash(pwd)
+            user_pwd_hash = generate_password_hash(
+                request.form.get("password")
+                )
             )
         db.session.add(new_user)
         db.session.commit()
         flash("Sign in successful")
         print("Sign in success")
-
         return redirect("/")
 
 
