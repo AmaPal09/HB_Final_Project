@@ -20,22 +20,24 @@ tr:nth-child(even) {
 </style>
 
 <head>
-    <title>HB_Project</title>
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+  <title>HB_Project</title>
 </head>
 <body>
-    <h1>HB_Project  </h1>
-    <!-- enable flashed messages -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class = flashes>
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+  <h1>HB_Project  </h1>
+  <!-- enable flashed messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class = flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
 
-    {% block content %} put your content here {% endblock %}
+  {% block content %} put your content here {% endblock %}
 
 
 </body>
