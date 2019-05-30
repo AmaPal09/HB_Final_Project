@@ -1,4 +1,4 @@
-from flask import (Flask, render_template, redirect, request, flash, session)
+from flask import (Flask, render_template, redirect, request, flash, session, jsonify)
 from model import connect_to_db, db, Route, Bus, User, User_Rating, Rating
 
 from werkzeug.security import generate_password_hash
@@ -13,36 +13,68 @@ def index():
     return render_template("homepage.html")
 
 
-@app.route('/routes')
-def route_list(): 
-    """ Display list of all Muni Routes present in SF"""
+@app.route('/buses')
+def bus_list(): 
+    """ Display list of all Muni Buses present in SF"""
 
-    routes = Route.query.filter(Route.agency_id == 49).all()
-    print(type(routes[0]))
+    buses = Bus.query.options(db.joinedload("bus_route")).order_by(Bus.bus_id).all() 
+    
+    return render_template("bus_list.html", buses=buses)
 
-    return render_template("route_list.html", routes=routes)
 
-
-@app.route('/routes/<route_id>')
-def route_details(route_id): 
-    """ Display the bus routes for the selected route """ 
-    print("Step1")
-    route = Route.query.filter(Route.route_id == int(route_id)).one()
-    print("Step2")
-    buses = Bus.query.filter(
-        Bus.route_id==route.route_id
+@app.route('/buses/<bus_id>')
+def bus_details(bus_id): 
+    """ Display the bus details for the selected bus """ 
+    
+    bus = Bus.query.filter(
+        Bus.bus_id==int(bus_id)
         ).options(db.joinedload("bus_ratings_details")
         ).all()
-    print("Step3")
-    print(buses[0].bus_ratings_details)
+    print(bus)
+
+    # Assemble all the labels for the chart
+    chart_labels = ['crowd_rating', 'time_rating', 'cleanliness_rating', 
+                    'safety_rating', 'outer_view_rating']
     
-    #bus_routes is a list of objs of class Bus_Route
+    #Get the average of the bus ratings in a list
+    avg_ratings = get_rating_avg(bus[0].bus_ratings_details)
 
     return render_template(
-        "route_details.html", 
-        route=route, 
-        buses = buses
+        "bus_details.html", 
+        bus = bus, 
+        labels = chart_labels, 
+        values = avg_ratings
         )
+
+
+def get_rating_avg(ratings):
+    """ Return list of average ratings for all 5 parameters 
+    I/P: List
+    O/P: List
+    Called from: bus_details
+    """ 
+
+    if len(ratings) == 0: 
+        return [0,0,0,0,0]
+    else: 
+        total_crowd_rating = 0 
+        total_time_rating = 0
+        total_cleanliness_rating = 0
+        total_safety_rating = 0
+        total_outer_view_rating = 0
+
+        for rating in ratings: 
+            total_crowd_rating += rating.crowd_rating
+            total_time_rating += rating.time_rating
+            total_cleanliness_rating += rating.cleanliness_rating
+            total_safety_rating += rating.safety_rating
+            total_outer_view_rating += rating.outer_view_rating
+
+        return [total_crowd_rating/len(ratings),
+                total_time_rating/len(ratings),
+                total_cleanliness_rating/len(ratings),
+                total_safety_rating/len(ratings),
+                total_outer_view_rating/len(ratings)]
 
 
 @app.route('/login', methods=['GET'])
@@ -56,30 +88,27 @@ def login_form():
 def user_login(): 
     """ Validate email id and password and log the user in"""
     
-    # Back to homepage if user is alreay logged in
     if is_logged_in(): 
         flash("User already logged in")
         return redirect("/")
     else: 
-        # print("Entered /login POST route")
         email = request.form.get("email")
-        # print(email)
         password = request.form.get("password")
-        # print(password)
 
         user = User.query.filter(User.user_email == email).first()
 
-        # print(user)
-        # print(user.check_user_pwd(password))
-        # print(session.keys())
-        if user is not None and user.check_user_pwd(password) and 'user_id' not in session.keys(): 
+        if user is not None and user.check_user_pwd(password): 
             session['user_id'] = user.user_id
             flash("Logged in")
             session.modified = True
             return redirect("/")
         else: 
-            flash("Log in unsuccessful")
-            return redirect("/")
+            if user is None: 
+                flash("User does not exist. Please signin")
+                return redirect("/")
+            else: 
+                flash("Log in unsuccessful")
+                return redirect("/")
 
 
 @app.route('/logout')
