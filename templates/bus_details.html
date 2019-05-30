@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Bus details for {{bus.bus_title}}</h2>   
+        <h3> Bus route Title: {{bus.bus_title}} &nbsp;&nbsp;&nbsp;&nbsp;
+        Bus route Tag: {{bus.bus_tag}} </h3>
+
+        <h3>Average rating for this route</h3>
+            <div class="Ave-bus-rating-chart">
+                <canvas id="barChart" width="300" height="200"></canvas>
+                <div id="barLegend" class="chart-legend"></div>
+            </div>
+            <script>
+                const options = {
+                    responsive: true
+                };
+                var ctx = document.getElementById('barChart').getContext('2d');
+                var myChart = new Chart(ctx, {                                       
+                        type: 'bar',
+                        data: {
+                            labels : [{% for item in labels %}
+                                     "{{item}}",
+                                    {% endfor %}],
+                            // labels: 
+                            // ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                            datasets: [{
+                                label: 'Avg User Ratings',
+                                data: [{% for item in values %}
+                                     "{{item}}",
+                                    {% endfor %}],
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)'
+                                    // 'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)'
+                                    // 'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                            beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+            </script>
+
+            {% if bus[0].bus_ratings_details is defined and bus[0].bus_ratings_details|length>0 %}
+            {% else %}
+                <p>
+                    No ratings present. 
+                    Please rate this route. 
+                </p>
+            {% endif %}
+
+        <h3>Rate this bus route: </h3> 
+        <form action="/rate_bus/{{bus.bus_id}}" method="POST">
+            <p>Rate how crowded the bus was?
+            <select name="crowd_rating">
+                <option value="5">5</option> <option value="4">4</option>
+                <option value="3">3</option> <option value="2">2</option>
+                <option value="1">1</option>
+            </select></p>
+            <p>Rate how crowded the bus was?
+            <select name="time_rating">
+                <option value="5">5</option> <option value="4">4</option>
+                <option value="3">3</option> <option value="2">2</option>
+                <option value="1">1</option>
+            </select></p>
+            <p>Rate how clean the bus was?
+            <select name="cleanliness_rating">
+                <option value="5">5</option> <option value="4">4</option>
+                <option value="3">3</option> <option value="2">2</option>
+                <option value="1">1</option>
+            </select></p>
+            <p>Rate how safe the bus was?
+            <select name="safety_rating">
+                <option value="5">5</option> <option value="4">4</option>
+                <option value="3">3</option> <option value="2">2</option>
+                <option value="1">1</option>
+            </select></p>
+            <p>Rate how was the view from the bus?
+            <select name="outer_view_rating">
+                <option value="5">5</option> <option value="4">4</option>
+                <option value="3">3</option> <option value="2">2</option>
+                <option value="1">1</option>
+            </select></p>
+            <p>Date and Time the journey was made? 
+                <input type="datetime-local" name="trip_datetime">
+            </p>
+            <p>Add your comments here
+            <label>Text: </label>
+            <input type="text" name="rating_text" required></p>
+            <button type="submit">Submit</button>
+            <br><br>
+        </form>
+        
+
+{% endblock %}
