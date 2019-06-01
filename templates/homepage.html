@@ -5,6 +5,18 @@
     <h3>Routes</h3>
         <p><a href="/buses">View all routes for SF-Muni</a></p>
 
+    <h3>Stops</h3>
+        <p><a href="/stops_geolocation">Check the stop closest to you</a></p>
+        <p>Or Enter the address here</p>
+        <form action="/stops_address" method="POST">
+            <label>Block: </label>
+            <input type="text" name="block" required>
+            <br><br>
+            <label>Street: </label>
+            <input type="text" name="street" required>
+            <br><br>
+            <button type="submit">Get stops</button>
+        </form>
 {% endblock %}
 
 
