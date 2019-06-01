@@ -1,10 +1,16 @@
 from flask import (Flask, render_template, redirect, request, flash, session, jsonify)
-from model import connect_to_db, db, Route, Bus, User, User_Rating, Rating
+from model import connect_to_db, db, Route, Bus, User, User_Rating, Rating, Stop
+
+from geopy.geocoders import Nominatim
+from geopy.distance import geodesic
+
 
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'abc'
+
+geolocator = Nominatim(user_agent='HB_final_project')
 
 @app.route('/')
 def index(): 
@@ -29,7 +35,7 @@ def bus_details(bus_id):
     bus = Bus.query.filter(
         Bus.bus_id==int(bus_id)
         ).options(db.joinedload("bus_ratings_details")
-        ).all()
+        ).first()
     print(bus)
 
     # Assemble all the labels for the chart
@@ -37,7 +43,7 @@ def bus_details(bus_id):
                     'safety_rating', 'outer_view_rating']
     
     #Get the average of the bus ratings in a list
-    avg_ratings = get_rating_avg(bus[0].bus_ratings_details)
+    avg_ratings = get_rating_avg(bus.bus_ratings_details)
 
     return render_template(
         "bus_details.html", 
@@ -76,6 +82,153 @@ def get_rating_avg(ratings):
                 total_safety_rating/len(ratings),
                 total_outer_view_rating/len(ratings)]
 
+
+@app.route('/stops_geolocation')
+def stops_geolocation(): 
+    """ Get the lat and long of the system user is using and display closest
+        stops """
+
+    return redirect("/")
+
+
+@app.route('/stops_address', methods = ['POST'])
+def stops_address(): 
+    """ Get the lat and long of the system user is using and display closest
+        stops """
+    # Get address details from user
+    block = request.form.get("block")
+    street = request.form.get("street")
+
+    # create address string for San Fransico
+    address = block+' '+street+' '+'SF'
+    # print(address)
+    # Get the address geocode details from geopy
+    user_start_point = geolocator.geocode(address)
+    # print(user_start_point.latitude)
+    # print(user_start_point.longitude)
+    # print(user_start_point.raw)   
+
+    if is_in_SF(user_start_point.raw['display_name']): 
+        distances, stop_dict = get_ten_closest_stops((user_start_point.latitude, 
+                                user_start_point.longitude))
+    
+    print(stop_dict[distances[0]][0].stop_buses)    
+
+    return render_template("stop_details.html", 
+                            distances = distances,
+                            stop_dict = stop_dict)
+
+def is_in_SF(address_string):
+    """ Check is given address is in SF 
+    I/P: String 
+    O/P: Boolean 
+    Called from: stops_address
+    """
+
+    # print('Started is_in_SF')
+    address_list = address_string.split(', ')
+    # print(address_list)
+    return (('SF' in address_list) or ('San Francisco' in address_list))
+
+
+def get_ten_closest_stops(user_loc_tuple): 
+    """ Get the closest 10 stop to user location 
+    I/P: latitude & longitude (float values) 
+    O/P: list of 10 lats and longs
+    called from: stops_addres
+    Sample: (37.7895479795918, -122.406717877551)
+    """
+    # print("user_lat & user_long is: ", user_loc_tuple)
+
+    # get all the stops
+    stops = Stop.query.options(db.joinedload("stop_buses")).all()
+    # dict to stops stops for their dist from the user
+    dist_stop_dict = {} 
+
+    # print(stops[0])
+    for stop in stops: 
+        # get dist of a stop from user in miles upto 1 decimal position
+        dist = round(
+            geodesic(
+                user_loc_tuple,(stop.stop_lat, stop.stop_lon)
+                ).miles,1 
+            )
+
+        # load the stop for to the dict depending on the dist. 
+        if dist in dist_stop_dict: 
+            dist_stop_dict[dist].append(stop)
+        else: 
+            dist_stop_dict[dist] = [stop]
+
+    # print(dist_stop_dict.keys()) 
+    dist_stop_ordered = merge_sort(list(dist_stop_dict.keys()))
+    
+    dist_ordered_dict = {}
+
+    for i in range(0,10):
+        # print(i)
+        if i == 0: 
+            dist_ordered_dict[dist_stop_ordered[i]] = \
+            dist_stop_dict[dist_stop_ordered[i]]
+        elif i == 1: 
+            dist_ordered_dict[dist_stop_ordered[i]] = \
+            dist_stop_dict[dist_stop_ordered[i]][:3]
+        elif i == 2: 
+            dist_ordered_dict[dist_stop_ordered[i]] = \
+            dist_stop_dict[dist_stop_ordered[i]][:2]
+        else: 
+            dist_ordered_dict[dist_stop_ordered[i]] = \
+            dist_stop_dict[dist_stop_ordered[i]][:1]
+    
+    return dist_stop_ordered[:10] , (dist_ordered_dict)
+
+        
+def merge_sort(dist_list): 
+    """ Merge sort list and return result
+    I/P: List 
+    O/P: List 
+    Called from: get_ten_closest_stops
+    """
+
+    # Break everything down into a list of one
+    if len(dist_list) < 2:  # if length of lst is 1, return lst
+        # print("returning", dist_list)
+        return dist_list
+
+    mid = int(len(dist_list) / 2)  # index at half the list
+    list1 = merge_sort(dist_list[:mid])  # divide list in half
+    list2 = merge_sort(dist_list[mid:])  # assign other half
+
+    return make_merge(list1, list2)
+
+
+def make_merge(list1, list2):
+    """Merge lists
+    I/P: 2 Lists
+    O/P: 1 merged List
+    Called from: merge_sort """
+
+    result_list = []
+    # print(list1, list2)
+    while len(list1) > 0 or len(list2) > 0:
+        # if items left in both lists
+        # compare first items of each list
+        if list1 == []:
+            result_list.append(list2.pop(0))
+        elif list2 == []:
+            result_list.append(list1.pop(0))
+        elif list1[0] < list2[0]:
+            # append and rm first item of lst1
+            result_list.append(list1.pop(0))
+        else:
+            # append and rm first item of lst2
+            result_list.append(list2.pop(0))
+
+    # print("returning merge", result_list)
+    return result_list
+
+
+    
 
 @app.route('/login', methods=['GET'])
 def login_form(): 
@@ -199,7 +352,6 @@ def is_logged_in():
         Else return False
     """
     return 'user_id' in session
-
 
 
 
