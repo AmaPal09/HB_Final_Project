@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Bus Stops closest to you</h2>   
+    <ul>
+        {% for dist in distances %}
+            <li>
+            <p>At a distance of {{dist}} miles are the following stops</p>
+                <ul>
+                    {% for stop in stop_dict[dist] %}
+                        <li>
+                            <p>Stop name: {{stop.stop_title}} &nbsp; 
+                            Stop Id: {{stop.stop_id_tag}}</p>
+                            <ul>
+                                <p>And you can board the following buses from here</p>
+                                {% for bus in stop.stop_buses %}
+                                    <li><a href="/buses/{{bus.bus_id}}">
+                                        Bus Title: {{bus.bus_title}}</a></li>
+                                {% endfor %}    
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
