@@ -3,6 +3,8 @@ from model import connect_to_db, db, Route, Bus, User, User_Rating, Rating, Stop
 
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
+import requests
+import json
 
 
 from werkzeug.security import generate_password_hash
@@ -83,10 +85,16 @@ def get_rating_avg(ratings):
                 total_outer_view_rating/len(ratings)]
 
 
-@app.route('/stops_geolocation')
-def stops_geolocation(): 
+@app.route('/user_geolocation' , methods=['POST'])
+def users_geolocation(): 
     """ Get the lat and long of the system user is using and display closest
         stops """
+
+    lat = request.json.get("lat")
+    lng = request.json.get("lng")
+
+    print(lat)
+    print(lng)
 
     return redirect("/")
 
@@ -111,6 +119,9 @@ def stops_address():
     if is_in_SF(user_start_point.raw['display_name']): 
         distances, stop_dict = get_ten_closest_stops((user_start_point.latitude, 
                                 user_start_point.longitude))
+    else: 
+        flash("Enter a location in SF")
+        return redirect("/")
     
     print(stop_dict[distances[0]][0].stop_buses)    
 
@@ -354,7 +365,9 @@ def is_logged_in():
     return 'user_id' in session
 
 
-
+@app.route("/static/<path:resource>")
+def get_resource(resource):
+    return send_from_directory("static", resource)
 
 
 if __name__ == "__main__": 

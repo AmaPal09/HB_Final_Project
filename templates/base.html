@@ -22,6 +22,7 @@ tr:nth-child(even) {
 <head>
   <script src="https://code.jquery.com/jquery.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+    <script async src="/static/js/base.js"></script>
   <title>HB_Project</title>
 </head>
 <body>
@@ -39,6 +40,8 @@ tr:nth-child(even) {
 
   {% block content %} put your content here {% endblock %}
 
-
+  {% block scripts %} add your scripts here
+    {% endblock %}
 </body>
 </html>
+

@@ -6,8 +6,13 @@
         <p><a href="/buses">View all routes for SF-Muni</a></p>
 
     <h3>Stops</h3>
-        <p><a href="/stops_geolocation">Check the stop closest to you</a></p>
-        <p>Or Enter the address here</p>
+        <section class="map">
+            {% block map %}
+            <div id="map"></div>
+            {% endblock %}
+        </section>
+        <button id="btn_geolocate"> Get location</button>
+        <p>Or Enter an SF address here</p>
         <form action="/stops_address" method="POST">
             <label>Block: </label>
             <input type="text" name="block" required>
@@ -19,4 +24,13 @@
         </form>
 {% endblock %}
 
-
+{% block scripts %}
+    <!-- <script
+        async defer
+        src="https://maps.googleapis.com/maps/api/js?AIzaSyAq1mjmCBmz4h5310nNe2UVbU-VPeaJ2i4&callback=initMap">
+    </script> -->
+    <script> 
+    </script>
+    
+    <script async src="/static/js/geolocate.js"></script>
+{% endblock %}

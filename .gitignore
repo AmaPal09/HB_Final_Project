@@ -7,4 +7,4 @@ test.sql
 *.pyc
 seed_data
 env/
-
+Commands*
