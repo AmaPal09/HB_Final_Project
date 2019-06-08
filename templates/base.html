@@ -2,6 +2,19 @@
 <!DOCTYPE html>
 <html>
 <style>
+/* Always set the map height explicitly to define the size of the div
+ * element that contains the map. */
+  #map {
+    height: 80%;
+  }
+  /* Optional: Makes the sample page fill the window. */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
@@ -20,9 +33,11 @@ tr:nth-child(even) {
 </style>
 
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
   <script src="https://code.jquery.com/jquery.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
-    <script async src="/static/js/base.js"></script>
+  <script async src="/static/js/base.js"></script>
   <title>HB_Project</title>
 </head>
 <body>
@@ -40,8 +55,6 @@ tr:nth-child(even) {
 
   {% block content %} put your content here {% endblock %}
 
-  {% block scripts %} add your scripts here
-    {% endblock %}
 </body>
 </html>
 
