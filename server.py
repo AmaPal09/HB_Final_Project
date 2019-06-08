@@ -40,6 +40,8 @@ def bus_details(bus_id):
         ).first()
     print(bus)
 
+    session['bus'] = bus.to_dict()
+
     # Assemble all the labels for the chart
     chart_labels = ['crowd_rating', 'time_rating', 'cleanliness_rating', 
                     'safety_rating', 'outer_view_rating']
@@ -53,6 +55,34 @@ def bus_details(bus_id):
         labels = chart_labels, 
         values = avg_ratings
         )
+
+
+@app.route('/bus-route/map')
+def bus_route_map(): 
+    print('start the route for json')
+    map_data = {}
+    print(map_data)
+    map_data['bus_id'] = session['bus']['bus_id']
+    map_data['stop_list'] = []
+    print(map_data)
+
+
+    bus = Bus.query.filter(
+        Bus.bus_id==int(session['bus']['bus_id'])
+        ).options(db.joinedload("bus_stops")
+        ).first()
+
+    map_data['start_lat'] = bus.bus_stops[0].stop_lat
+    map_data['start_lng'] = bus.bus_stops[0].stop_lon
+    map_data['end_lat'] = bus.bus_stops[0].stop_lat
+    map_data['end_lng'] = bus.bus_stops[0].stop_lon
+
+    for stop in bus.bus_stops: 
+        map_data['stop_list'].append(stop.to_dict())
+
+    return jsonify(map_data)
+
+
 
 
 def get_rating_avg(ratings):
@@ -90,13 +120,50 @@ def users_geolocation():
     """ Get the lat and long of the system user is using and display closest
         stops """
 
-    lat = request.json.get("lat")
-    lng = request.json.get("lng")
+    # user_lat = request.json.get("lat")
+    # user_lng = request.json.get("lng")
 
-    print(lat)
-    print(lng)
+    user_lat = request.form.get("lat")
+    user_lng = request.form.get("lng")
 
-    return redirect("/")
+    user_cord_str = str(user_lat) + " , " + str(user_lng)
+
+    user_location = geolocator.reverse(user_cord_str)
+    # print(user_location)
+    # print(user_location.address)
+
+    if is_in_SF(user_location.address): 
+        # print("user is in SF")
+        distances, stop_dict, stop_dict_2 = get_ten_closest_stops((user_lat, 
+                                user_lng))
+        print(stop_dict[distances[0]][0].stop_buses)    
+    else: 
+        # print("user not in SF")
+        flash("Enter a location in SF")
+        return redirect("/")
+
+    # print(distances)
+    # print(stop_dict)
+    session['user_lat'] = user_lat
+    session['user_lng'] = user_lng
+    # session['distances'] = distances
+    session['stop_list'] = []
+    for key in stop_dict_2.keys(): 
+        for stop in stop_dict_2[key]:
+            session['stop_list'].append(stop.to_dict()) 
+
+    return render_template("stop_details.html", 
+                            distances = distances,
+                            stop_dict = stop_dict)
+
+@app.route('/stop-details/map')
+def stop_details_map(): 
+    map_data = {}
+    map_data['user_lat'] = session['user_lat']
+    map_data['user_lng'] = session['user_lng']
+    map_data['stop_list'] = session['stop_list']
+
+    return jsonify(map_data)
 
 
 @app.route('/stops_address', methods = ['POST'])
@@ -117,13 +184,21 @@ def stops_address():
     # print(user_start_point.raw)   
 
     if is_in_SF(user_start_point.raw['display_name']): 
-        distances, stop_dict = get_ten_closest_stops((user_start_point.latitude, 
+        distances, stop_dict, stop_dict_2 = get_ten_closest_stops((user_start_point.latitude, 
                                 user_start_point.longitude))
     else: 
         flash("Enter a location in SF")
         return redirect("/")
     
-    print(stop_dict[distances[0]][0].stop_buses)    
+    # print(stop_dict[distances[0]][0].stop_buses)    
+
+    session['user_lat'] = user_start_point.latitude
+    session['user_lng'] = user_start_point.longitude
+    # session['distances'] = distances
+    session['stop_list'] = []
+    for key in stop_dict_2.keys(): 
+        for stop in stop_dict_2[key]:
+            session['stop_list'].append(stop.to_dict()) 
 
     return render_template("stop_details.html", 
                             distances = distances,
@@ -190,8 +265,24 @@ def get_ten_closest_stops(user_loc_tuple):
         else: 
             dist_ordered_dict[dist_stop_ordered[i]] = \
             dist_stop_dict[dist_stop_ordered[i]][:1]
+
+    dist_ordered_dict_2 = {}
+    for i in range(0,10):
+        # print(i)
+        if i == 0: 
+            dist_ordered_dict_2[str(dist_stop_ordered[i])] = \
+            dist_stop_dict[dist_stop_ordered[i]]
+        elif i == 1: 
+            dist_ordered_dict_2[str(dist_stop_ordered[i])] = \
+            dist_stop_dict[dist_stop_ordered[i]][:3]
+        elif i == 2: 
+            dist_ordered_dict_2[str(dist_stop_ordered[i])] = \
+            dist_stop_dict[dist_stop_ordered[i]][:2]
+        else: 
+            dist_ordered_dict_2[str(dist_stop_ordered[i])] = \
+            dist_stop_dict[dist_stop_ordered[i]][:1]
     
-    return dist_stop_ordered[:10] , (dist_ordered_dict)
+    return dist_stop_ordered[:10] , (dist_ordered_dict), dist_ordered_dict_2
 
         
 def merge_sort(dist_list): 
