@@ -144,11 +144,58 @@
                     <label>Text: </label>
                     <input type="text" name="rating_text" required></p>
                     <button type="submit">Submit</button>
-                    <br><br>
+                    <p>test3</p>
                 </form>
+                <p>test2</p>
+
             </li>
+            <p>test1</p>
             {% endfor %}
+            <p>test</p>
         </ul>
+        <p>This is the route map</p>
+        <div id=map></div>
+        <!-- <p>This is the route map</p> -->
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq1mjmCBmz4h5310nNe2UVbU-VPeaJ2i4&callback=initMap" async defer></script>
+
+
+        <script>
+        function initMap() {
+
+            let mapCenter = {
+                lat: 37.788951999999995, 
+                lng: -122.4115257
+            }; 
+
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: mapCenter,
+                zoom: 14, 
+                zoomControl: true,
+                panControl: false,
+                streetViewControl: false
+            });
+
+            const infoWindow = new google.maps.InfoWindow();
+
+            $.get('/bus-route/map' , (result) => { 
+                mapCenter.lat = result.user_lat;
+                mapCenter.lng = result.user_lng; 
+                let path = []; 
+
+                for (let stop in result.stop_list){
+                    path.push({lat: stop.stop_lat, lng: stop.stop_lon})
+                }
+                console.log(path);
+
+            });
+
+
+        }
+
+        </script>
         
+
+
 
 {% endblock %}
