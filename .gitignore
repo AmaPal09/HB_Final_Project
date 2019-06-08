@@ -9,3 +9,4 @@ seed_data
 env/
 Commands*
 static/js/geolocate.js
+templates/baseic_map_test.html
