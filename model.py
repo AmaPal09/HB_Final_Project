@@ -113,6 +113,17 @@ class Bus(db.Model):
         return "Bus_ID={}, Bus_Title={}, Bus_Tag={}, Route_Id={}, Bus_Direction={}".format(
             self.bus_id, self.bus_title, self.bus_tag, self.route_id, self.bus_direction)
 
+    def to_dict(self): 
+        bus_dict = {
+                    'bus_id': self.bus_id,
+                    'bus_title': self.bus_title,
+                    'bus_tag': self.bus_tag, 
+                    'route_id': self.route_id,
+                    'bus_direction': self.bus_direction 
+        }
+
+        return bus_dict
+
 
 #Details of various stops of various bus routes
 
@@ -151,6 +162,18 @@ class Stop(db.Model):
 
         return "Stop_ID={}, Stop_Tag={}, Stop_ID_Tag={}, Stop_Title={}, Stop_Longitude={}, Stop_Latitude={}".format(
             self.stop_id, self.stop_tag, self.stop_id_tag, self.stop_title, self.stop_lon, self.stop_lat)
+
+    def to_dict(self): 
+        stop_dict = {
+                    'stop_id': self.stop_id,
+                    'stop_tag': self.stop_tag,
+                    'stop_id_tag': self.stop_id_tag, 
+                    'stop_title': self.stop_title,
+                    'stop_lon': self.stop_lon, 
+                    'stop_lat': self.stop_lat
+        }
+
+        return stop_dict
 
 
 class Bus_Route_Stop(db.Model): 
