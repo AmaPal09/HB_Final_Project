@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>Bus Stops closest to you</h2>   
+    <h2>Bus Stops closest to you</h2>
+    <div id="stop_details">
     <ul>
         {% for dist in distances %}
             <li>
@@ -23,4 +24,115 @@
             </li>
         {% endfor %}
     </ul>
-{% endblock %}
+    </div>
+
+    <div id=map></div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR-API-KEY&callback=initMap" async defer></script>
+
+
+    <script>
+        function initMap() {
+
+        let mapCenter = {
+          lat: 37.788951999999995, 
+          lng: -122.4115257
+        }; 
+
+        const map = new google.maps.Map(document.getElementById('map'), {
+          center: mapCenter,
+          zoom: 14, 
+          zoomControl: true,
+          panControl: false,
+          streetViewControl: false
+        });
+
+        const infoWindow = new google.maps.InfoWindow();
+
+        $.get('/stop-details/map' , (result) => { 
+
+            mapCenter.lat = result.user_lat;
+            mapCenter.lng = result.user_lng; 
+
+            const userMarker = new google.maps.Marker({
+                    position: new google.maps.LatLng(result.user_lat,result.user_lng), 
+                    map: map, 
+                    // icon: {
+                    //         url: '/static/img/polarBear.svg',
+                    //         scaledSize: new google.maps.Size(50, 50)
+                    //     },
+                    title: `user_start_point`
+                });
+
+            const html = `<div class= "window-content">
+                    <div class="window-thumbnail">
+                        <p>User location</p>
+                    </div>`;
+
+            google.maps.event.addListener(userMarker, 'click', ()=> {
+                    infoWindow.close(); 
+                    infoWindow.setContent(html); 
+                    infoWindow.open(map, userMarker)
+                });
+
+            for (let stop of result.stop_list){
+                // console.log('stop details:');
+                // console.log(stop);
+                // console.log(stop.stop_lat);
+                // console.log(stop.stop_lon);
+
+                const marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(stop.stop_lat,stop.stop_lon), 
+                    map: map, 
+                    // icon: {
+                    //         url: '/static/img/polarBear.svg',
+                    //         scaledSize: new google.maps.Size(50, 50)
+                    //     },
+                    title: `Stop Title: ${stop.stop_Title}`
+                });
+
+                const html = `<div class= "window-content">
+                    <div class="window-thumbnail">
+                    <p>Stop details</p>
+                    </div>
+                    <ul class="stop-info">
+                        <li><b>Stop Title: </b>${stop.stop_title}</li>
+                        <li><b>Stop Id: </b>${stop.stop_id_tag}</li>
+                        <li><b>Stop Tag: </b>${stop.stop_tag}</li>
+                    </ul>
+                    </div>`;
+
+                google.maps.event.addListener(marker, 'click', ()=> {
+                    infoWindow.close(); 
+                    infoWindow.setContent(html); 
+                    infoWindow.open(map, marker)
+                });
+
+
+            }
+
+        } );
+
+
+        // const html = `<div class= "window-content">
+        //     <div class="window-thumbnail">
+        //     <p>This is a test marker</p>
+        //     </div>`;
+
+        // google.maps.event.addListener(marker1, 'click', ()=> {
+        //     infoWindow.close(); 
+        //     infoWindow.setContent(html); 
+        //     infoWindow.open(map, marker1)
+        // });
+
+        // google.maps.event.addListener(marker2, 'click', ()=> {
+        //     infoWindow.close(); 
+        //     infoWindow.setContent(html); 
+        //     infoWindow.open(map, marker2)
+        // });
+
+    }   
+    </script>
+
+{%endblock%}
+
