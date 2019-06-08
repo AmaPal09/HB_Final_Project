@@ -7,28 +7,31 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/Geolocation
  */
 
-function success(pos){
-  var crd = pos.coords; 
+// function success(pos){
+//   var crd = pos.coords; 
 
-  fetch('/user_geolocation', {
-          method: 'POST', 
-          body: JSON.stringify({lat: crd.latitude, lng: crd.longitude}), 
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
-  })
-}
+//   fetch('/user_geolocation', {
+//           method: 'POST', 
+//           body: JSON.stringify({lat: crd.latitude, lng: crd.longitude}), 
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'Accept': 'application/json'
+//           }
+//   }).then(function(){
+//     window.location.href = '/user_geolocation' 
+//   } )
+
+// }
 
 
-function error(err) {
-  console.warn('ERROR(${err.code}): ${err.message}'); 
-}
+// function error(err) {
+//   console.warn('ERROR(${err.code}): ${err.message}'); 
+// }
 
-function geolocate() {
-  navigator.geolocation.getCurrentPosition(success, error); 
-}
+// function geolocate() {
+//   navigator.geolocation.getCurrentPosition(success, error); 
+// }
 
-let btn = document.getElementById("btn_geolocate"); 
+// let btn = document.getElementById("btn_geolocate"); 
 
-btn.addEventListener("click", geolocate)
+// btn.addEventListener("click", geolocate)
