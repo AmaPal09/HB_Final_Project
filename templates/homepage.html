@@ -11,7 +11,27 @@
             <div id="map"></div>
             {% endblock %}
         </section>
-        <button id="btn_geolocate"> Get location</button>
+        <form action = "/user_geolocation" method="POST">
+            <input id="lat" name= "lat" type="hidden">
+            <input id="lng" name= "lng" type="hidden">
+            <button id="btn_geolocate"> Get location</button>
+        </form>
+        <script>
+            var user_lat = document.getElementById("lat");
+            var user_lng = document.getElementById("lng"); 
+
+            function success(pos){
+                user_lat.value = pos.coords.latitude;
+                user_lng.value = pos.coords.longitude; 
+            }
+
+            function error(err) { 
+                console.warn('ERROR(${err.code}): ${err.message}'); 
+            }
+
+            navigator.geolocation.getCurrentPosition(success, error); 
+            
+        </script>
         <p>Or Enter an SF address here</p>
         <form action="/stops_address" method="POST">
             <label>Block: </label>
