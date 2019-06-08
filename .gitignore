@@ -8,3 +8,4 @@ test.sql
 seed_data
 env/
 Commands*
+static/js/geolocate.js
