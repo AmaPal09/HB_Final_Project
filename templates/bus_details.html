@@ -7,12 +7,8 @@
 
     <div class = "bus_details_heading">
         <div class="row">
-            <div class="col">
-                <h3>Bus route: {{bus.bus_tag[0]}}</h3> 
-            </div>
-            <div class="col">
+                <h3>Bus route: {{bus.bus_tag[0]}}</h3> &nbsp;&nbsp;&nbsp;&nbsp;
                 <h3>Bus Title: {{bus.bus_title[11:]}}</h3>
-            </div>
         </div>
     </div>
 
@@ -24,7 +20,7 @@
 
     <div class="bar_chart" id=bar_chart_1></div>
         <div class="row">
-            <div class="col"> 
+            <div class="col-lg-6 col-md-6 col-sm-12"> 
                 <h5>Average rating for this route</h5>
                     <div class="chartClass" id="chartDiv">
                         <canvas id="barChart"></canvas>
@@ -107,7 +103,7 @@
                         <option value="3">3</option> <option value="2">2</option>
                         <option value="1">1</option>
                     </select></p>
-                    <p>Rate how crowded the bus was?
+                    <p>Rate how the wait time for the bus was?
                     <select name="time_rating">
                         <option value="5">5</option> <option value="4">4</option>
                         <option value="3">3</option> <option value="2">2</option>
@@ -132,7 +128,13 @@
                         <option value="1">1</option>
                     </select></p>
                     <p>Date and Time the journey was made? 
-                        <input type="datetime-local" name="trip_datetime">
+                        <!-- <input type="datetime-local" name="trip_datetime"> -->
+                        <input type="date" id="start" name="trip_date"
+                            value="2019-01-01"
+                            min="2018-01-01">
+                        <input type="time" id="appt" name="trip_time"
+                            value="9:00"
+                            min="9:00" required>
                     </p>
                     <p>Add your comments here
                     <label>Text: </label>
@@ -142,10 +144,10 @@
                 </form>
             </div>
 
-            <div class="col">
+            <div class="col-lg-6 col-md-6 col-sm-12">
 
                 <h5>This is the route map</h5>
-                <div id=map></div>
+                <div class= "bus_map" id=map></div>
                 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq1mjmCBmz4h5310nNe2UVbU-VPeaJ2i4&callback=initMap" async defer></script>
 
                 <script>

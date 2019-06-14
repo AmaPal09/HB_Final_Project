@@ -38,7 +38,7 @@ def bus_details(bus_id):
         Bus.bus_id==int(bus_id)
         ).options(db.joinedload("bus_ratings_details")
         ).first()
-    print(bus)
+    # print(bus)
 
     session['bus'] = bus.to_dict()
 
@@ -59,12 +59,12 @@ def bus_details(bus_id):
 
 @app.route('/bus-route/map')
 def bus_route_map(): 
-    print('start the route for json')
+    # print('start the route for json')
     map_data = {}
-    print(map_data)
+    # print(map_data)
     map_data['bus_id'] = session['bus']['bus_id']
     map_data['stop_list'] = []
-    print(map_data)
+    # print(map_data)
 
 
     bus = Bus.query.filter(
@@ -136,7 +136,7 @@ def users_geolocation():
         # print("user is in SF")
         distances, stop_dict, stop_dict_2 = get_ten_closest_stops((user_lat, 
                                 user_lng))
-        print(stop_dict[distances[0]][0].stop_buses)    
+        # print(stop_dict[distances[0]][0].stop_buses)    
     else: 
         # print("user not in SF")
         flash("Enter a location in SF")
@@ -368,15 +368,15 @@ def user_login():
 
 @app.route('/logout')
 def logout(): 
-    print(session)
+    # print(session)
 
     if is_logged_in(): 
         session.pop('user_id')
         flash("Logged out")
-        print(session)
+        # print(session)
     else: 
         flash("No user logged in currently")
-        print(session)
+        # print(session)
 
     return redirect("/")
 
@@ -396,7 +396,7 @@ def user_signin():
 
     if User.query.filter(User.user_email == email).first(): 
         flash("User already exsits. Login here")
-        print("User exists")
+        # print("User exists")
         return redirect("/login")
     else: 
         new_user = User(
@@ -410,7 +410,7 @@ def user_signin():
         db.session.add(new_user)
         db.session.commit()
         flash("Sign in successful")
-        print("Sign in success")
+        # print("Sign in success")
         return redirect("/")
 
 
@@ -420,19 +420,24 @@ def rate_bus(bus_id):
         If the user is logged in add rating to the ratings table and generate the
         rating id and use that rating id load the user_rating table
     """
-    print(bus_id)
+    # print(bus_id)
     if is_logged_in(): 
         pass
     else: 
         flash("Please log in to rate this route")
         return redirect("/login")
 
+    date_text = request.form.get("trip_date")
+    time_text = request.form.get("trip_time")
+    date_time = request.form.get("trip_date") + ' ' + request.form.get("trip_time") +':00.000000' 
+    print(date_time)
     new_rating = Rating(
         crowd_rating = int(request.form.get("crowd_rating")) ,
         time_rating = int(request.form.get("time_rating")) ,
         cleanliness_rating = int(request.form.get("cleanliness_rating")) ,
         safety_rating = int(request.form.get("safety_rating")) ,
         outer_view_rating = int(request.form.get("outer_view_rating")) ,
+        rating_datetime = date_time, 
         rating_text = request.form.get("rating_text"))
     db.session.add(new_rating)
     db.session.commit()
