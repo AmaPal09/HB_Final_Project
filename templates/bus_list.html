@@ -4,20 +4,19 @@
 
     <table>
         <tr>
-            <th>Route Tag</th>
+            <th>Bus Route</th>
             <th>Route Title</th>
             <th>Bus Title</th>
             <th>Bus Tag</th>
         </tr>
         {% for bus in buses %}
             <tr>
-                <td>{{bus.bus_route.route_tag}}</td>
-                <td>{{bus.bus_route.route_title}}</td>
-                <td>{{bus.bus_title}}</td>
+                <td><a href="/buses/{{bus.bus_id}}">{{bus.bus_route.route_tag}}</a></td>
+                <td><a href="/buses/{{bus.bus_id}}">{{bus.bus_route.route_title}}</a></td>
+                <td><a href="/buses/{{bus.bus_id}}">{{bus.bus_title}}</a></td>
                 <td><a href="/buses/{{bus.bus_id}}">{{bus.bus_tag}}</a></td>
             </tr>
         {% endfor %}
-
     </table>
 
 {% endblock %}

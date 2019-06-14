@@ -1,47 +1,71 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>Homepage for HB_project</h2>
+    
+        <div id = "homepage_heading">
+            <h2>Explore SF with Muni</h2>
+        </div>
 
-    <h3>Routes</h3>
-        <p><a href="/buses">View all routes for SF-Muni</a></p>
+        <div class="row">
+            <div class = "homepage_text" id = "about_project">
+                <p>Public transport is the cheapset way of exploring a city and visiting new places. If you are in transit in SF and have small amount of time or if you just feel like exlopring the city while being spontenous, use this application to and get to know San Franscico while riding on the SF Muni.
+                </p>
+            </div>
+        </div>
 
-    <h3>Stops</h3>
-        <section class="map">
-            {% block map %}
-            <div id="map"></div>
-            {% endblock %}
-        </section>
-        <form action = "/user_geolocation" method="POST">
-            <input id="lat" name= "lat" type="hidden">
-            <input id="lng" name= "lng" type="hidden">
-            <button id="btn_geolocate"> Get location</button>
-        </form>
-        <script>
-            var user_lat = document.getElementById("lat");
-            var user_lng = document.getElementById("lng"); 
+        <div class="row"> 
+            <div class="col"> 
+                <div class="homepage_link" id="homepage_to_buses">
+                    <h3>View all routes for SF-Muni</h3>
+                    <!-- <p><a href="/buses">Buses</a></p> -->
+                    <button onclick="window.location.href = '/buses';">Buses</button>
+                </div>
+            </div>
 
-            function success(pos){
-                user_lat.value = pos.coords.latitude;
-                user_lng.value = pos.coords.longitude; 
-            }
 
-            function error(err) { 
-                console.warn('ERROR(${err.code}): ${err.message}'); 
-            }
+            <div class="col"> 
+                <div class="homepage_link" id="homepage_to_stops">
+                    <h3>Check for Muni stops avialable</h3>
+                    <p>If you are in SF get stops near you</p>
+                    <!-- <section class="map">
+                        {% block map %}
+                        <div id="map"></div>
+                        {% endblock %}
+                    </section> -->
+                    <form action = "/user_geolocation" method="POST">
+                        <input id="lat" name= "lat" type="hidden">
+                        <input id="lng" name= "lng" type="hidden">
+                        <button id="btn_geolocate"> Get location</button>
+                    </form>
+                    <script>
+                        var user_lat = document.getElementById("lat");
+                        var user_lng = document.getElementById("lng"); 
 
-            navigator.geolocation.getCurrentPosition(success, error); 
-            
-        </script>
-        <p>Or Enter an SF address here</p>
-        <form action="/stops_address" method="POST">
-            <label>Block: </label>
-            <input type="text" name="block" required>
-            <br><br>
-            <label>Street: </label>
-            <input type="text" name="street" required>
-            <br><br>
-            <button type="submit">Get stops</button>
-        </form>
+                        function success(pos){
+                            user_lat.value = pos.coords.latitude;
+                            user_lng.value = pos.coords.longitude; 
+                        }
+
+                        function error(err) { 
+                            console.warn('ERROR(${err.code}): ${err.message}'); 
+                        }
+
+                        navigator.geolocation.getCurrentPosition(success, error); 
+                
+                    </script>
+                    <br><br>
+                    <p>Or Enter an SF address here</p>
+                    <form action="/stops_address" method="POST">
+                        <label>Block: </label>
+                        <input type="text" name="block" required>
+                        <br>
+                        <label>Street: </label>
+                        <input type="text" name="street" required>
+                        <br>
+                        <button type="submit">Get stops</button>
+                    </form>
+                </div>
+            </div>
+
 {% endblock %}
 
 {% block scripts %}

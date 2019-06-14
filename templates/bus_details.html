@@ -1,188 +1,227 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>Bus details for {{bus.bus_title}}</h2>   
-        <h3> Bus route Title: {{bus.bus_title}} &nbsp;&nbsp;&nbsp;&nbsp;
-        Bus route Tag: {{bus.bus_tag}} </h3>
 
-        <h3>Average rating for this route</h3>
-            <div class="Ave-bus-rating-chart">
-                <canvas id="barChart" width="300" height="200"></canvas>
-                <div id="barLegend" class="chart-legend"></div>
+    <div class = "bus_details_heading">
+        <h2>Bus details for {{bus.bus_title}}</h2>  
+    </div>
+
+    <div class = "bus_details_heading">
+        <div class="row">
+            <div class="col">
+                <h3>Bus route: {{bus.bus_tag[0]}}</h3> 
             </div>
-            <script>
-                const options = {
-                    responsive: true
-                };
-                var ctx = document.getElementById('barChart').getContext('2d');
-                var myChart = new Chart(ctx, {                                       
-                        type: 'bar',
-                        data: {
-                            labels : [{% for item in labels %}
-                                     "{{item}}",
-                                    {% endfor %}],
-                            // labels: 
-                            // ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                            datasets: [{
-                                label: 'Avg User Ratings',
-                                data: [{% for item in values %}
-                                     "{{item}}",
-                                    {% endfor %}],
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(255, 206, 86, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)'
-                                    // 'rgba(255, 159, 64, 0.2)'
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)'
-                                    // 'rgba(255, 159, 64, 1)'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                yAxes: [{
-                                    ticks: {
-                                            beginAtZero: true
+            <div class="col">
+                <h3>Bus Title: {{bus.bus_title[11:]}}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="bus_details_text" id="about_bus_details">
+        <p>Below this the chart of average user ratings for this bus route. <br> 
+            Find the average rating by the users for the <span class="emphasis">crowd </span> where <span class="emphasis">0</span> is not much crowd in the bus and <span class="emphasis">5</span> is a very croweded bus. The wait <span class="emphasis">time</span> for the bus where 0 is no waiting time for the bus and <span class="emphasis">5</span> is had to wait more than 15 mins. The <span class="emphasis">clean</span> state of the bus where <span class="emphasis">0</span> the bus was clean and <span class="emphasis">5</span> is it was filty. The felling of being <span class="emphasis">safe</span> in the bus where <span class="emphasis">0</span> it felt safe to <span class="emphasis">5</span> being it felt very unsafe. The <span class="emphasis">view</span> from the bus where <span class="emphasis">0</span> there was nothing work exciting to <<span class="emphasis">5</span> being wonderful view outside. <br> The map of the route that shows the areas of SF the bus covers. 
+        </p>
+    </div>
+
+    <div class="bar_chart" id=bar_chart_1></div>
+        <div class="row">
+            <div class="col"> 
+                <h5>Average rating for this route</h5>
+                    <div class="chartClass" id="chartDiv">
+                        <canvas id="barChart"></canvas>
+                        <div id="barLegend" class="chartLegend"></div>
+                    </div>
+                    <script>
+                        const options = {
+                            responsive: true
+                        };
+                        Chart.defaults.global.defaultFontColor = 'black';
+                        Chart.defaults.global.defaultFontSize = 13;
+                        var ctx = document.getElementById('barChart').getContext('2d');
+                        var myChart = new Chart(ctx, {                                       
+                                type: 'bar',
+                                data: {
+                                    labels :[{% for item in labels %}
+                                             "{{item[0:-7]}}",
+                                            {% endfor %}],
+                                    // labels: 
+                                    // ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                                    datasets: [{
+                                        label: 'Avg User Ratings',
+                                        data: [{% for item in values %}
+                                             "{{item}}",
+                                            {% endfor %}],
+                                        backgroundColor: 'rgba(209, 62, 54, 0.4)' ,
+                                        // [
+                                            // 'rgba(255, 99, 132, 0.2)',
+                                            // 'rgba(54, 162, 235, 0.2)',
+                                            // 'rgba(255, 206, 86, 0.2)',
+                                            // 'rgba(75, 192, 192, 0.2)',
+                                            // 'rgba(153, 102, 255, 0.2)'
+                                            // 'rgba(255, 159, 64, 0.2)'
+                                        // ],
+                                        borderColor: 'rgba(209, 62, 54, 1)' ,
+                                        // [
+                                            // 'rgba(255, 99, 132, 1)',
+                                            // 'rgba(54, 162, 235, 1)',
+                                            // 'rgba(255, 206, 86, 1)',
+                                            // 'rgba(75, 192, 192, 1)',
+                                            // 'rgba(153, 102, 255, 1)'
+                                            // 'rgba(255, 159, 64, 1)'
+                                        // ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: { 
+                                                    beginAtZero: true
+                                            }
+                                        }], 
+                                        xAxes: [{
+                                            barPercentage: 0.5,
+                                            defaultFontSize: 18
+                                        }]
                                     }
-                                }]
-                            }
-                        }
+
+                                }
+                            });
+                    </script>
+
+                    <br>
+
+                    {% if bus.bus_ratings_details is defined and bus.bus_ratings_details|length>0 %}
+                    {% else %}
+                        <p>
+                            No ratings present. 
+                            Please rate this route. 
+                        </p>
+                        <br>
+                    {% endif %}
+
+                <h5>Rate this bus route: </h5> 
+                <form id= "ratings_form" action="/rate_bus/{{bus.bus_id}}" method="POST">
+                    <p>Rate how crowded the bus was?
+                    <select name="crowd_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Rate how crowded the bus was?
+                    <select name="time_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Rate how clean the bus was?
+                    <select name="cleanliness_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Rate how safe the bus was?
+                    <select name="safety_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Rate how was the view from the bus?
+                    <select name="outer_view_rating">
+                        <option value="5">5</option> <option value="4">4</option>
+                        <option value="3">3</option> <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select></p>
+                    <p>Date and Time the journey was made? 
+                        <input type="datetime-local" name="trip_datetime">
+                    </p>
+                    <p>Add your comments here
+                    <label>Text: </label>
+                    <input id="rating_comments_text" type="text" name="rating_text" maxlength="100"></p>
+                    <button type="submit">Submit</button>
+                    <br><br>
+                </form>
+            </div>
+
+            <div class="col">
+
+                <h5>This is the route map</h5>
+                <div id=map></div>
+                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq1mjmCBmz4h5310nNe2UVbU-VPeaJ2i4&callback=initMap" async defer></script>
+
+                <script>
+                function initMap() {
+
+                    let mapCenter = {
+                        lat: 37.788951999999995, 
+                        lng: -122.4115257
+                    }; 
+
+                    const map = new google.maps.Map(document.getElementById('map'), {
+                        center: mapCenter,
+                        zoom: 12, 
+                        zoomControl: true,
+                        panControl: false,
+                        streetViewControl: false
                     });
-            </script>
 
-            {% if bus.bus_ratings_details is defined and bus.bus_ratings_details|length>0 %}
-            {% else %}
-                <p>
-                    No ratings present. 
-                    Please rate this route. 
-                </p>
-            {% endif %}
+                    // const infoWindow = new google.maps.InfoWindow();
 
-        <h3>Rate this bus route: </h3> 
-        <form action="/rate_bus/{{bus.bus_id}}" method="POST">
-            <p>Rate how crowded the bus was?
-            <select name="crowd_rating">
-                <option value="5">5</option> <option value="4">4</option>
-                <option value="3">3</option> <option value="2">2</option>
-                <option value="1">1</option>
-            </select></p>
-            <p>Rate how crowded the bus was?
-            <select name="time_rating">
-                <option value="5">5</option> <option value="4">4</option>
-                <option value="3">3</option> <option value="2">2</option>
-                <option value="1">1</option>
-            </select></p>
-            <p>Rate how clean the bus was?
-            <select name="cleanliness_rating">
-                <option value="5">5</option> <option value="4">4</option>
-                <option value="3">3</option> <option value="2">2</option>
-                <option value="1">1</option>
-            </select></p>
-            <p>Rate how safe the bus was?
-            <select name="safety_rating">
-                <option value="5">5</option> <option value="4">4</option>
-                <option value="3">3</option> <option value="2">2</option>
-                <option value="1">1</option>
-            </select></p>
-            <p>Rate how was the view from the bus?
-            <select name="outer_view_rating">
-                <option value="5">5</option> <option value="4">4</option>
-                <option value="3">3</option> <option value="2">2</option>
-                <option value="1">1</option>
-            </select></p>
-            <p>Date and Time the journey was made? 
-                <input type="datetime-local" name="trip_datetime">
-            </p>
-            <p>Add your comments here
-            <label>Text: </label>
-            <input type="text" name="rating_text" required></p>
-            <button type="submit">Submit</button>
-            <br><br>
-        </form>
-        <p>This is the route map</p>
-        <div id=map></div>
-        <script src="https://maps.googleapis.com/maps/api/js?key=YOUR-API-KEY&callback=initMap" async defer></script>
+                    $.get('/bus-route/map' , (result) => { 
+                        mapCenter.lat = result.start_lat;
+                        mapCenter.lng = result.start_lng; 
+                        let pathCoords = []; 
 
-        <script>
-        function initMap() {
+                        // for (let stop of result.stop_list.slice(1,result.stop_list.length-1)){
+                        //     // console.log(stop);
+                        //     pathCoords.push({lat: stop.stop_lat, lng: stop.stop_lon});
+                        // }
+                        // console.log(pathCoords);
 
-            let mapCenter = {
-                lat: 37.788951999999995, 
-                lng: -122.4115257
-            }; 
+                        // const routeOptions = {
+                        //     origin: {lat: result.start_lat, lng: result.start_lng}, 
+                        //     destination: {lat: result.end_lat, lng: result.end_lng} ,
+                        //     waypoints: pathCoords,
+                        //     travelMode: google.maps.TravelMode.TRANSIT
+                        // };
 
-            const map = new google.maps.Map(document.getElementById('map'), {
-                center: mapCenter,
-                zoom: 12, 
-                zoomControl: true,
-                panControl: false,
-                streetViewControl: false
-            });
+                        // const directionsService = new google.maps.DirectionsService;
 
-            // const infoWindow = new google.maps.InfoWindow();
+                        // directionsService.route(routeOptions, (response, status) => {
+                        //     if (status === google.maps.DirectionsStatus.OK) {
+                        //         directionsDisplay.setDirections(response);
+                        //     } else {
+                        //         alert('Directions request failed due to ' + status);
+                        //     }
+                        // });
 
-            $.get('/bus-route/map' , (result) => { 
-                mapCenter.lat = result.start_lat;
-                mapCenter.lng = result.start_lng; 
-                let pathCoords = []; 
+                        // const directionsDisplay = new google.maps.DirectionsRenderer;
 
-                // for (let stop of result.stop_list.slice(1,result.stop_list.length-1)){
-                //     // console.log(stop);
-                //     pathCoords.push({lat: stop.stop_lat, lng: stop.stop_lon});
-                // }
-                // console.log(pathCoords);
+                        // directionsDisplay.setMap(map);
 
-                // const routeOptions = {
-                //     origin: {lat: result.start_lat, lng: result.start_lng}, 
-                //     destination: {lat: result.end_lat, lng: result.end_lng} ,
-                //     waypoints: pathCoords,
-                //     travelMode: google.maps.TravelMode.TRANSIT
-                // };
+                        for (let stop of result.stop_list){
+                            // console.log(stop);
+                            pathCoords.push({lat: stop.stop_lat, lng: stop.stop_lon});
+                        }
+                        console.log(pathCoords);
 
-                // const directionsService = new google.maps.DirectionsService;
+                        const busPath = new google.maps.Polyline({
+                            path: pathCoords,
+                            geodesic: true,
+                            strokeColor: '#000000',
+                            strokeOpacity: 0.5,
+                            strokeWeight: 2, 
+                            map: map
+                        });
 
-                // directionsService.route(routeOptions, (response, status) => {
-                //     if (status === google.maps.DirectionsStatus.OK) {
-                //         directionsDisplay.setDirections(response);
-                //     } else {
-                //         alert('Directions request failed due to ' + status);
-                //     }
-                // });
+                        busPath.setMap(map);
+                    });
 
-                // const directionsDisplay = new google.maps.DirectionsRenderer;
 
-                // directionsDisplay.setMap(map);
-
-                for (let stop of result.stop_list){
-                    // console.log(stop);
-                    pathCoords.push({lat: stop.stop_lat, lng: stop.stop_lon});
                 }
-                console.log(pathCoords);
 
-                const busPath = new google.maps.Polyline({
-                    path: pathCoords,
-                    geodesic: true,
-                    strokeColor: '#000000',
-                    strokeOpacity: 0.5,
-                    strokeWeight: 2, 
-                    map: map
-                });
+                </script>
+            </div>
+        </div>
 
-                busPath.setMap(map);
-            });
-
-
-        }
-
-        </script>
-        
 
 {% endblock %}

@@ -1,38 +1,12 @@
 <!DOCTYPE html> 
 <!DOCTYPE html>
 <html>
-<style>
-/* Always set the map height explicitly to define the size of the div
- * element that contains the map. */
-  #map {
-    height: 80%;
-  }
-  /* Optional: Makes the sample page fill the window. */
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-</style>
 
 <head>
+  <link href="https://fonts.googleapis.com/css?family=Righteous&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/base.css"> 
+  <link rel="stylesheet" type="text/css" href="/static/css/chart.css"> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
   <script src="https://code.jquery.com/jquery.js"></script>
@@ -41,7 +15,20 @@ tr:nth-child(even) {
   <title>HB_Project</title>
 </head>
 <body>
-  <h1>HB_Project  </h1>
+  
+
+  <div class="navBarClass" id="navBar">
+    <ul class="navListClass" id="navList">
+      <li><a href="/">Home</a></li>
+      <li><a href="/buses">Buses</a></li>
+      <li><a href="/login">Login</a></li>
+      <li><a href="/signin">Signin</a></li>
+      <li><a href="/logout">Logout</a></li>
+    </ul>  
+  </div>
+
+  <!-- <h1>HB_Project</h1> -->
+
   <!-- enable flashed messages -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -52,8 +39,11 @@ tr:nth-child(even) {
       </ul>
     {% endif %}
   {% endwith %}
-
-  {% block content %} put your content here {% endblock %}
+  
+  <!-- page content -->
+  <div class="container-fluid"> 
+    {% block content %} put your content here {% endblock %}
+  </div>
 
 </body>
 </html>

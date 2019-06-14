@@ -1,0 +1,11 @@
+#chartDiv {
+  width: 600px;
+  height: 300px;
+  font-family: "Righteous", cursive;
+  font-weight:  300;
+}
+
+#chartDiv canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
