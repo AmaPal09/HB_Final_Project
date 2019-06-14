@@ -1,6 +1,11 @@
-#map {
+.stop_map {
     height: 20%;
-    width: 50%;
+    width: 100%;
+  }
+
+.bus_map {
+    height: 50%;
+    width: 100%;
   }
 
   html, body {
@@ -89,6 +94,11 @@ span.emphasis {
   color: #D13E36;
 }
 
+ul.flashes {
+  font-weight: bold;
+  color: #D13E36; 
+}
+
 /*End of things on the homepag*/
 
 /* generic for all */
@@ -112,6 +122,10 @@ input {
   border-color: #18130F;
   width: 200px;
 }
+
+span.underline{
+  text-decoration: underline;
+}
 /* end of generic for all */
 
 /* Stop details page */
@@ -128,13 +142,26 @@ ul.stop_list_1 {
 
 ul.stop_list_2 {
  list-style-type: none;
-  margin: 0.5em;
-  padding: 0.5em; 
+  margin-left: 0.5em;
+  margin-top:0;
+  margin-right:0;
+  margin-bottom: 0;
+  padding-left: 0.5em; 
+  padding-top:0;
+  padding-right:0;
+  padding-bottom:0;
 }
+
 ul.stop_list_3{
  list-style-type: none;
-  margin: 0.5em;
-  padding: 0.5em;  
+  margin-left: 0.5em;
+  margin-top:0;
+  margin-right:0;
+  margin-bottom: 0;
+  padding-left: 0.5em; 
+  padding-top:0;
+  padding-right:0;
+  padding-bottom:0;
 }
 
 span.stop_emphasis {
