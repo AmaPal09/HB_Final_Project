@@ -54,7 +54,7 @@ p{
 }
 
 
-NavBar starts
+/*NavBar starts*/
 #navBar{
   width: 100%;
 }
@@ -85,7 +85,7 @@ NavBar starts
   background-color: #18130F;
 }
 
-/*NavBar ends
+/*NavBar ends*/
 
 /*Things on the home page*/
 
@@ -97,6 +97,10 @@ span.emphasis {
 ul.flashes {
   font-weight: bold;
   color: #D13E36; 
+}
+
+#about_project {
+  margin-left: 1em;
 }
 
 /*End of things on the homepag*/
@@ -172,6 +176,11 @@ span.stop_emphasis {
 /* End of stop details page */
 
 
+/* Bus details page*/
+div.bus_details_heading h3{
+  margin-left: 0.5em;
+}
+/* End of bus details page*/
 
 /*Table css starts*/
 table {
